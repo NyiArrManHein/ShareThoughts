@@ -1,6 +1,7 @@
 "use client";
 import React, { ReactNode, useState } from "react";
 import { Inter } from "next/font/google";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,15 @@ function Html({ children }: { children: ReactNode }) {
             <a className="btn btn-ghost text-xl">ST</a>
           </div>
           <div className="flex-none gap-2">
+            {/* Theme Changer */}
+            <div className="flex flex-row" onClick={() => setTheme(!theme)}>
+              <span className={theme ? "px-1" : "px-1 text-warning"}>
+                <FaSun />
+              </span>
+              <span className={theme ? "px-1 text-warning" : "px-1"}>
+                <FaMoon />
+              </span>
+            </div>
             <div className="form-control">
               <input
                 type="text"

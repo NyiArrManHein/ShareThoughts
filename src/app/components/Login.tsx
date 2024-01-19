@@ -48,8 +48,8 @@ function Login({
             value={password}
           />
           <a href="#">Forgot password?</a>
-          <div className="grid grid-cols-1 py-2">
-            <input type="submit" value="Login" className="btn btn-info" />
+          <div className="grid grid-cols-1">
+            <input type="submit" value="Login" className="btn btn-info mr-2" />
           </div>
           <a href="#" onClick={() => setIsRegister(true)}>
             Create an account?
