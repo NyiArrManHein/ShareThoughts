@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Post from "./components/Post";
+import { FaPlus } from "react-icons/fa";
 
 export default function Home() {
   const [isAddPost, setIsAddPost] = useState(false);
@@ -14,12 +15,12 @@ export default function Home() {
             className={isAddPost ? "hidden" : "btn mb-1"}
             onClick={() => setIsAddPost(!isAddPost)}
           >
-            New Post
+            <FaPlus /> Add Post
           </span>
           <div
             className={
               isAddPost
-                ? "card card-bordered flex flex-col text-justify p-3 mb-1 sm:text-sm text-base w-full"
+                ? "card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base w-full"
                 : "hidden"
             }
           >

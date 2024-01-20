@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { FaComment, FaShare, FaThumbsUp } from "react-icons/fa";
 
 function Post() {
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
   return (
-    <div className="card card-bordered flex flex-col text-justify p-3 sm:text-sm text-base">
+    <div className="card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base">
       <div className="card-title">
         <h2>Title</h2>
         <small>#2024</small>
@@ -40,17 +41,23 @@ function Post() {
         write an illustration paragraph that supports your thesis with examples.
       </div>
       <div className="w-full flex flex-row pt-2">
-        <button className="w-full">1K</button>
-        <button className="w-full">1K</button>
-        <button className="w-full">6</button>
+        <span className="flex w-full justify-center">1K</span>
+        <span className="flex w-full justify-center">1K</span>
+        <span className="flex w-full justify-center">6</span>
       </div>
-      <hr />
       <div className="w-full flex flex-row pt-2">
-        <button className="w-full">Like</button>
-        <button className="w-full" onClick={() => setIsComment(!isComment)}>
-          Comment
-        </button>
-        <button className="w-full">Share</button>
+        <span className="flex w-full justify-center">
+          <FaThumbsUp />
+        </span>
+        <span
+          className="flex w-full justify-center"
+          onClick={() => setIsComment(!isComment)}
+        >
+          <FaComment />
+        </span>
+        <span className="flex w-full justify-center">
+          <FaShare />
+        </span>
       </div>
       <div className={isComment ? "" : "hidden"}>
         <form>
@@ -59,6 +66,8 @@ function Post() {
             className="input input-bordered w-full"
             name="comment"
             id="comment_postId"
+            value={comment}
+            onChange={(e) => setComment(e.currentTarget.value)}
           />
           <input
             type="submit"
