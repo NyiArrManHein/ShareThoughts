@@ -80,8 +80,7 @@ export async function insertUser(
   if (firstName && lastName && email && username && password) {
     const isUserExists = await prisma.user.findFirst({
       where: {
-        email: email,
-        username: username,
+        OR: [{ email: email }, { username: username }],
       },
     });
     if (isUserExists === null) {

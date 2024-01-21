@@ -7,8 +7,14 @@ import { FlashMessage } from "@/lib/models";
 
 function Login({
   setIsRegister,
+  flashMessage,
+  setFlashMessage,
 }: {
   setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  flashMessage: FlashMessage | undefined;
+  setFlashMessage: React.Dispatch<
+    React.SetStateAction<FlashMessage | undefined>
+  >;
 }) {
   // Controller
   const [username, setUsername] = useState("");
@@ -19,16 +25,15 @@ function Login({
 
   // States
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [flashMessage, setFlashMessage] = useState<FlashMessage | undefined>(
-    undefined
-  );
 
   return (
     <div>
       <fieldset className="flex flex-row justify-center">
-        {flashMessage ? <FlashMsg flashMessage={flashMessage} /> : ""}
-        <form className="grid grid-cols-1">
+        <form className="grid grid-cols-1 max-w-lg">
           <legend className="text text-lg">Login</legend>
+          <span>
+            {flashMessage ? <FlashMsg flashMessage={flashMessage} /> : ""}
+          </span>
           <div>
             <Input
               id={"username"}
@@ -51,7 +56,13 @@ function Login({
           <div className="grid grid-cols-1">
             <input type="submit" value="Login" className="btn btn-info mr-2" />
           </div>
-          <a href="#" onClick={() => setIsRegister(true)}>
+          <a
+            href="#"
+            onClick={() => {
+              setIsRegister(true);
+              setFlashMessage(undefined);
+            }}
+          >
             Create an account?
           </a>
         </form>

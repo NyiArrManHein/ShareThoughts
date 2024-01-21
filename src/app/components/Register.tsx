@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import Input from "./Input";
 import FlashMsg from "./FlashMsg";
 import { FlashMessage, Results, User } from "@/lib/models";
+import { redirect } from "next/navigation";
 
 function Register({
   setIsRegister,
+  flashMessage,
+  setFlashMessage,
 }: {
   setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+  flashMessage: FlashMessage | undefined;
+  setFlashMessage: React.Dispatch<
+    React.SetStateAction<FlashMessage | undefined>
+  >;
 }) {
   // Controllers
   const [firstName, setFirstName] = useState("");
@@ -29,9 +36,6 @@ function Register({
 
   // States
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [flashMessage, setFlashMessage] = useState<FlashMessage | undefined>(
-    undefined
-  );
 
   const registerUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,8 +59,11 @@ function Register({
       const { user, message }: { user: User; message: Results } =
         await res.json();
       setFlashMessage({ message: message, category: "bg-info" });
+      if (user) {
+        setIsRegister(false);
+      }
     } else {
-      const { message }: { message: Results } = await res.json();
+      const { message }: { message: string } = await res.json();
       setFlashMessage({ message: message, category: "bg-error" });
     }
   };
@@ -129,7 +136,13 @@ function Register({
           <div className="grid grid-cols-1 py-2 pr-2">
             <input type="submit" value="Register" className="btn btn-info" />
           </div>
-          <a href="#" onClick={() => setIsRegister(false)}>
+          <a
+            href="#"
+            onClick={() => {
+              setIsRegister(false);
+              setFlashMessage(undefined);
+            }}
+          >
             Already have an account?
           </a>
         </form>
