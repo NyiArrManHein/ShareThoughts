@@ -73,11 +73,15 @@ export async function insertUser(
   password?: string,
   host?: string
 ) {
+  let registeredUser: User | undefined = undefined;
+  let msg: string = "Please fill in all the field.";
+
   const hashPassword = new HashPassword();
   if (firstName && lastName && email && username && password) {
     const isUserExists = await prisma.user.findFirst({
       where: {
         email: email,
+        username: username,
       },
     });
     if (isUserExists === null) {
@@ -94,6 +98,8 @@ export async function insertUser(
         },
       });
       if (user) {
+        registeredUser = user as User;
+        msg = `Registered successfully as ${registeredUser.username}.`;
         // const sentEmailId = await sendMail(
         //   user.email,
         //   "Todo: Verify your email",
@@ -117,11 +123,19 @@ export async function insertUser(
             buttonValue: "Verify",
           })
         );
-        return sentEmailId ? (user as User) : undefined;
+        msg = sentEmailId
+          ? msg + ` And sent the verification link to ${registeredUser.email}.`
+          : msg +
+            ` Failed to send the verification link to ${registeredUser.email}`;
+        // return sentEmailId ? (user as User) : undefined;
+      } else {
+        msg = "Failed to register the user.";
       }
+    } else {
+      msg = `User already exist with ${username} or ${email}.`;
     }
   }
-  return undefined;
+  return { user: registeredUser, msg: msg };
 }
 
 export async function getUserByResetPasswordToken(resetToken?: string) {

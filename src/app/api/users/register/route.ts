@@ -5,8 +5,8 @@ import prisma from "@/db";
 import { insertUser } from "@/lib/query/user/query";
 
 export async function POST(request: NextRequest) {
-  let message = Results.REQUIRED_LOGOUT;
-  let user: User | undefined = undefined;
+  let message: string = Results.REQUIRED_LOGOUT;
+  let registeredUser: User | undefined = undefined;
   let status = 403;
   // Create response
   const response = new Response();
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     status = 200;
     const { firstName, lastName, username, email, password } =
       await request.json();
-    user = await insertUser(
+    const { user, msg } = await insertUser(
       firstName,
       lastName,
       email,
@@ -26,12 +26,13 @@ export async function POST(request: NextRequest) {
       password,
       request.headers.get("host")!
     );
-    message = user ? Results.SUCCESS : Results.FAIL;
+    registeredUser = user;
+    message = msg;
   }
   return createResponse(
     response,
     JSON.stringify({
-      user: user,
+      user: registeredUser,
       message: message,
     }),
     { status: status }
