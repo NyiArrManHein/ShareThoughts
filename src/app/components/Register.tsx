@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Input from "./Input";
 import FlashMsg from "./FlashMsg";
+import { FlashMessage, Results, User } from "@/lib/models";
 
 function Register({
   setIsRegister,
@@ -28,14 +29,46 @@ function Register({
 
   // States
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [flashMessage, setFlashMessage] = useState(undefined);
+  const [flashMessage, setFlashMessage] = useState<FlashMessage | undefined>(
+    undefined
+  );
+
+  const registerUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = {
+      firstName: formData.get("firstName"),
+      lastName: formData.get("lastName"),
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+    console.log(data);
+    const res = await fetch("/api/users/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const { user, message }: { user: User; message: Results } =
+        await res.json();
+      setFlashMessage({ message: message, category: "bg-info" });
+    } else {
+      const { message }: { message: Results } = await res.json();
+      setFlashMessage({ message: message, category: "bg-error" });
+    }
+  };
 
   return (
     <div>
       <fieldset className="flex flex-row justify-center">
-        {flashMessage ? <FlashMsg flashMessage={flashMessage} /> : ""}
-        <form className="grid grid-cols-1 w-3/4">
+        <form className="grid grid-cols-1 w-3/4" onSubmit={registerUser}>
           <legend className="text text-lg">Register</legend>
+          <span>
+            {flashMessage ? <FlashMsg flashMessage={flashMessage} /> : ""}
+          </span>
           <div className="grid grid-cols-2">
             <Input
               id={"firstName"}

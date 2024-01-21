@@ -26,6 +26,7 @@ function Input({
         <input
           type={type}
           id={id}
+          name={id}
           className="input input-info sm:input-lg input-md"
           value={value}
           onChange={(e) => controller(e.currentTarget.value)}

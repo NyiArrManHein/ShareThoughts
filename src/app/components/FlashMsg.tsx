@@ -12,8 +12,8 @@ function FlashMsg({ flashMessage }: { flashMessage: FlashMessage }) {
       role="alert"
       className={
         flashMessage.category === categories.info
-          ? "alert alert-info"
-          : "alert alert-error"
+          ? "alert alert-info mt-2"
+          : "alert alert-error mt-2"
       }
     >
       <svg
