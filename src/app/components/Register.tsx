@@ -23,7 +23,9 @@ function Register({
   const [lastNameError, setLastNameError] = useState(undefined);
 
   const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState(undefined);
+  const [usernameError, setUsernameError] = useState<string | undefined>(
+    undefined
+  );
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(undefined);
@@ -32,13 +34,25 @@ function Register({
   const [passwordError, setPasswordError] = useState(undefined);
 
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState(undefined);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<
+    string | undefined
+  >(undefined);
 
   // States
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const registerUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Reset the errors
+    setFirstNameError(undefined);
+    setLastNameError(undefined);
+    setUsernameError(undefined);
+    setEmailError(undefined);
+    setPasswordError(undefined);
+    setConfirmPasswordError(undefined);
+
+    // Build data from HTML Form Element
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const data = {
       firstName: formData.get("firstName"),
@@ -46,25 +60,55 @@ function Register({
       username: formData.get("username"),
       email: formData.get("email"),
       password: formData.get("password"),
+      confirmPassword: formData.get("confirmPassword"),
     };
-    console.log(data);
-    const res = await fetch("/api/users/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-      const { user, message }: { user: User; message: Results } =
-        await res.json();
-      setFlashMessage({ message: message, category: "bg-info" });
-      if (user) {
-        setIsRegister(false);
+
+    // First Step: Making sure all the fields are filled
+    if (
+      data.email &&
+      data.firstName &&
+      data.lastName &&
+      data.password &&
+      data.username
+    ) {
+      // Setting up the Format to check if username includes special characters
+      const format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if (!format.test(data.username.toString())) {
+        // Checking if Password field is equal with Confirm Password field
+        if (data.password === data.confirmPassword) {
+          const res = await fetch("/api/users/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          if (res.ok) {
+            const { user, message }: { user: User; message: Results } =
+              await res.json();
+            setFlashMessage({ message: message, category: "bg-info" });
+            if (user) {
+              setIsRegister(false);
+            }
+          } else {
+            const { message }: { message: string } = await res.json();
+            setFlashMessage({ message: message, category: "bg-error" });
+          }
+        } else {
+          setConfirmPasswordError(
+            "Confirm Password field much equal with the Password field."
+          );
+          setPassword("");
+          setConfirmPassword("");
+        }
+      } else {
+        setUsernameError("Username cannot include special characters.");
       }
     } else {
-      const { message }: { message: string } = await res.json();
-      setFlashMessage({ message: message, category: "bg-error" });
+      setFlashMessage({
+        message: "Please fill in all the fields.",
+        category: "bg-info",
+      });
     }
   };
 
