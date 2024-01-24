@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex flex-row w-full p-5">
-        <div className=" w-1/4 hidden sm:flex">Page Links</div>
+        <div className="w-1/4 lg:w-6/12 hidden sm:flex">Page Links</div>
         <div className="w-full px-3">
           <span
             className={isAddPost ? "hidden" : "btn mb-1"}
@@ -52,7 +52,7 @@ export default function Home() {
             <Post />
           </div>
         </div>
-        <div className=" w-1/4 hidden sm:flex">Sidebar</div>
+        <div className="w-1/4 lg:w-6/12 hidden sm:flex">Sidebar</div>
       </div>
     </main>
   );

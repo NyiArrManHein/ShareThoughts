@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaComment, FaShare, FaThumbsUp } from "react-icons/fa";
+import {
+  FaComment,
+  FaHeart,
+  FaLaugh,
+  FaSadCry,
+  FaShare,
+  FaSmile,
+  FaThumbsUp,
+} from "react-icons/fa";
 
 function Post() {
   const [isComment, setIsComment] = useState(false);
@@ -34,7 +42,7 @@ function Post() {
         </span>
       </div>
       <div>Jan 18, 24</div>
-      <div className=" card-body">
+      <div className=" card-body text-lg">
         Learn how to form, develop, and express your ideas in paragraphs. Find
         out what a paragraph is, how to decide what to put in it, and how to
         organize it with different techniques. See a 5-step example of how to
@@ -45,18 +53,40 @@ function Post() {
         <span className="flex w-full justify-center">1K</span>
         <span className="flex w-full justify-center">6</span>
       </div>
-      <div className="w-full flex flex-row pt-2">
+      <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">
-          <FaThumbsUp />
+          <div className="dropdown dropdown-hover dropdown-top">
+            <span tabIndex={0} className="hover:text-primary cursor-pointer">
+              <FaThumbsUp />
+            </span>
+            <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
+              <span className="text-2xl pr-3 text-warning hover:text-3xl">
+                <FaSmile />
+              </span>
+              <span className="text-2xl pr-3 text-warning hover:text-3xl">
+                <FaSadCry />
+              </span>
+              <span className="text-2xl pr-3 text-warning hover:text-3xl">
+                <FaLaugh />
+              </span>
+              <span className="text-2xl pr-3 text-error hover:text-3xl">
+                <FaHeart />
+              </span>
+            </div>
+          </div>
         </span>
         <span
           className="flex w-full justify-center"
           onClick={() => setIsComment(!isComment)}
         >
-          <FaComment />
+          <span className="hover:text-primary cursor-pointer">
+            <FaComment />
+          </span>
         </span>
         <span className="flex w-full justify-center">
-          <FaShare />
+          <span className="hover:text-primary cursor-pointer">
+            <FaShare />
+          </span>
         </span>
       </div>
       <div className={isComment ? "" : "hidden"}>
