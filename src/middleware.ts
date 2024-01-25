@@ -7,7 +7,7 @@ export const middleware = async (req: NextRequest) => {
   const res = NextResponse.next();
   const session = await getSession(req, res);
   const { user } = session;
-  if (user === undefined) {
+  if (user !== undefined) {
     return NextResponse.redirect(new URL("/auth", req.url));
   }
 
@@ -16,5 +16,5 @@ export const middleware = async (req: NextRequest) => {
 
 export const config = {
   // matcher: ["/", "/purchase/:path*"],
-  matcher: ["/"],
+  matcher: ["/auth"],
 };
