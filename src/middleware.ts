@@ -7,8 +7,9 @@ export const middleware = async (req: NextRequest) => {
   const res = NextResponse.next();
   const session = await getSession(req, res);
   const { user } = session;
+
   if (user !== undefined) {
-    return NextResponse.redirect(new URL("/auth", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return res;

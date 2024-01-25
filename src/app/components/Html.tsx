@@ -28,7 +28,6 @@ function Html({ children }: { children: ReactNode }) {
     });
     if (res.ok) {
       await mutateUser([]);
-      redirect("/");
     }
   };
 

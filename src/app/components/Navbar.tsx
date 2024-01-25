@@ -105,7 +105,7 @@ function Navbar({
             </div>
           </>
         ) : (
-          <span>Login</span>
+          <a href="/auth">Login</a>
         )}
       </div>
     </div>

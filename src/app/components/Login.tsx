@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Input from "./Input";
 import FlashMsg from "./FlashMsg";
 import { FlashMessage } from "@/lib/models";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useUser from "@/lib/useUser";
 
 function Login({
@@ -18,6 +18,7 @@ function Login({
     React.SetStateAction<FlashMessage | undefined>
   >;
 }) {
+  const { push } = useRouter();
   // Use User
   const { mutateUser } = useUser();
 
@@ -48,14 +49,14 @@ function Login({
         },
         body: JSON.stringify(data),
       });
+      const { user, message } = await res.json();
       if (res.ok) {
-        const { user, message } = await res.json();
         if (user) {
           // Logged in successfully
           await mutateUser({ ...data, user: user });
-          redirect("/");
+          push("/");
         } else {
-          const { message } = await res.json();
+          // const { message } = await res.json();
           setFlashMessage({ message: message, category: "bg-error" });
         }
       } else {
