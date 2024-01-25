@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Input from "./Input";
 import FlashMsg from "./FlashMsg";
 import { FlashMessage } from "@/lib/models";
+import { redirect } from "next/navigation";
+import useUser from "@/lib/useUser";
 
 function Login({
   setIsRegister,
@@ -16,6 +18,9 @@ function Login({
     React.SetStateAction<FlashMessage | undefined>
   >;
 }) {
+  // Use User
+  const { mutateUser } = useUser();
+
   // Controller
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState(undefined);
@@ -26,18 +31,52 @@ function Login({
   // States
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const loginUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Build data from HTML Form Element
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = {
+      username_or_email: formData.get("username_or_email"),
+      password: formData.get("password"),
+    };
+    if (data.username_or_email && data.password) {
+      const res = await fetch("/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const { user, message } = await res.json();
+        if (user) {
+          // Logged in successfully
+          await mutateUser({ ...data, user: user });
+          redirect("/");
+        } else {
+          const { message } = await res.json();
+          setFlashMessage({ message: message, category: "bg-error" });
+        }
+      } else {
+        const { message } = await res.json();
+        setFlashMessage({ message: message, category: "bg-error" });
+      }
+    }
+  };
+
   return (
     <div>
       <fieldset className="flex flex-row justify-center">
-        <form className="grid grid-cols-1 max-w-lg">
+        <form className="grid grid-cols-1 max-w-lg" onSubmit={loginUser}>
           <legend className="text text-lg">Login</legend>
           <span>
             {flashMessage ? <FlashMsg flashMessage={flashMessage} /> : ""}
           </span>
           <div>
             <Input
-              id={"username"}
-              label={"Username"}
+              id={"username_or_email"}
+              label={"Username or Email"}
               type={"text"}
               controller={setUsername}
               errorMessage={usernameError}

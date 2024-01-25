@@ -22,6 +22,20 @@ export async function getUserByEmail(email?: string) {
   return undefined;
 }
 
+export async function getUserByUsername(username?: string) {
+  if (username) {
+    const data = await prisma.user.findFirst({
+      where: {
+        username: username,
+      },
+    });
+    if (data !== null) {
+      return data;
+    }
+  }
+  return undefined;
+}
+
 export async function insertResetPasswordTokenByEmail(email?: string) {
   let token: string | undefined = undefined;
   if (email) {
@@ -243,6 +257,7 @@ export async function fetchUserByResetPasswordToken(token?: string) {
 
 export async function insertSessionIdByEmail(email?: string) {
   let sessionId: string | undefined = undefined;
+  let message: string = "Please provide required data to login.";
   if (email) {
     const user = await prisma.user.update({
       where: {
@@ -252,9 +267,11 @@ export async function insertSessionIdByEmail(email?: string) {
         sessionId: generateToken(),
       },
     });
+    message = "Incorrect email or password. Please try again.";
     if (user) {
       sessionId = user.sessionId!;
+      message = `Logged in successfully as ${user.username}.`;
     }
   }
-  return { sessionId };
+  return { sessionId, message };
 }

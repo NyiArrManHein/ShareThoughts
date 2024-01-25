@@ -2,14 +2,18 @@ import { NextRequest } from "next/server";
 import { Results } from "@/lib/models";
 import { createResponse, getSession } from "@/lib/session";
 import prisma from "@/db";
-import { getUserByEmail, insertSessionIdByEmail } from "@/lib/query/user/query";
-import { HashPassword } from "@/lib/utils";
+import {
+  getUserByEmail,
+  getUserByUsername,
+  insertSessionIdByEmail,
+} from "@/lib/query/user/query";
+import { HashPassword, isEmail } from "@/lib/utils";
 
 // {user: User, message: Results}
 // Request { email, password }
 export async function POST(request: NextRequest) {
   const hashPassword = new HashPassword();
-  let message = Results.REQUIRED_LOGOUT;
+  let msg: string = Results.REQUIRED_LOGOUT;
   // Create response
   const response = new Response();
   // Create session
@@ -18,10 +22,15 @@ export async function POST(request: NextRequest) {
 
   if (currentUser === undefined) {
     // Get login data
-    const { email, password } = await request.json();
-    const user = await getUserByEmail(email);
+    const { username_or_email, password } = await request.json();
+
+    const user = isEmail(username_or_email)
+      ? await getUserByEmail(username_or_email)
+      : await getUserByUsername(username_or_email);
+
+    // const user = await getUserByEmail(username_or_email);
     if (user && hashPassword.decrypt(user.password) === password) {
-      const { sessionId } = await insertSessionIdByEmail(user.email);
+      const { sessionId, message } = await insertSessionIdByEmail(user.email);
       if (sessionId) {
         session.user = {
           id: user.id,
@@ -39,20 +48,20 @@ export async function POST(request: NextRequest) {
         };
         await session.save();
         currentUser = session.user;
-        message = Results.SUCCESS;
+        msg = message;
       } else {
-        message = Results.FAIL;
+        msg = message;
       }
     } else {
-      message = Results.FAIL;
+      msg = "Incorrect email or password. Please try again.";
     }
     return createResponse(
       response,
-      JSON.stringify({ user: currentUser, message: message }),
+      JSON.stringify({ user: currentUser, message: msg }),
       { status: 200 }
     );
   }
-  return createResponse(response, JSON.stringify({ message: message }), {
+  return createResponse(response, JSON.stringify({ message: msg }), {
     status: 403,
   });
 }
