@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import {
+  FaClock,
   FaComment,
   FaHeart,
   FaLaugh,
@@ -16,10 +17,32 @@ function Post() {
   const [comment, setComment] = useState("");
   return (
     <div className="card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base">
+      {/* Post head */}
       <div className="card-title">
-        <h2>Title</h2>
-        <small>#2024</small>
-        <span className=" text-right w-full ">
+        {/* Left head */}
+        <span className="w-full">
+          <div className="flex flex-row">
+            <div role="button" className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img
+                  alt="Tailwind CSS Navbar component"
+                  src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                />
+              </div>
+            </div>
+            <span className=" pt-2 pl-2">
+              johndoe
+              <div className="flex flex-row text-xs">
+                <span className="pr-2">
+                  <FaClock />
+                </span>
+                <span>Jan 18, 24</span>
+              </div>
+            </span>
+          </div>
+        </span>
+        {/* Right head: Actions */}
+        <span className=" text-right">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="m-1">
               ...
@@ -41,7 +64,7 @@ function Post() {
           </div>
         </span>
       </div>
-      <div>Jan 18, 24</div>
+      <div className=" card-body text-lg sm:text-2xl pb-0">Title</div>
       <div className=" card-body text-lg">
         Learn how to form, develop, and express your ideas in paragraphs. Find
         out what a paragraph is, how to decide what to put in it, and how to
