@@ -1,13 +1,11 @@
+## Installations
+
+NodeJs, npm
+
 ## Installing Packages
 
-```
-npm i
-```
-
-## Init Prisma
-
-```
-npx prisma init
+```bash
+npm install
 ```
 
 ## Change the DATABASE_URL in .env
@@ -17,18 +15,23 @@ DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=pub
 
 ```
 
+## .env variables (You can't run without them)
+
+Contact the author -> dimensions.mm.it@gmail.com
+
 ## Getting Started
 
-First, run the development server:
+First, generate prisma and migrate:
 
 ```bash
+npx prisma generate && npx prisma migrate dev
+
+```
+
+Run development server
+
+```
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
