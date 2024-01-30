@@ -5,6 +5,7 @@ export type FlashMessage = {
 
 export type User = {
   id: number;
+  accountType: AccountType;
   joinedAt: Date;
   firstName: string;
   lastName: string;
@@ -16,6 +17,25 @@ export type User = {
   bio: string;
   sessionId: string;
   verified: boolean;
+};
+/**
+ * Post
+ */
+export type Post = {
+  id: number;
+  postType: PostType;
+  createdAt: Date;
+  updatedAt: Date;
+  title: String;
+  content: String;
+  published: Boolean;
+  likes: Like[];
+};
+
+export type Like = {
+  id: number;
+  userId: number;
+  postId: number;
 };
 
 /**
@@ -45,6 +65,21 @@ export const Gender = {
 };
 
 export type Gender = (typeof Gender)[keyof typeof Gender];
+
+export const AccountType = {
+  PRIVATE: "PRIVATE",
+  PUBLIC: "PUBLIC",
+};
+
+export type AccountType = (typeof AccountType)[keyof typeof AccountType];
+
+export const PostType = {
+  PRIVATE: "PRIVATE",
+  PUBLIC: "PUBLIC",
+  ONLYME: "ONLYME",
+};
+
+export type PostType = (typeof PostType)[keyof typeof PostType];
 
 /**
  * Messages
