@@ -26,9 +26,10 @@ export type Post = {
   postType: PostType;
   createdAt: Date;
   updatedAt: Date;
-  title: String;
-  content: String;
+  title: string;
+  content: string;
   published: Boolean;
+  authorName: string;
   likes: Like[];
 };
 

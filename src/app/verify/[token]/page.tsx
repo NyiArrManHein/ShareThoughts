@@ -1,8 +1,6 @@
 "use client";
 
-import { Results } from "@/lib/models";
 import React, { useEffect, useState } from "react";
-import Loading from "../../../components/Loading";
 
 function Verify({ params }: { params: { token: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(true);
@@ -17,7 +15,8 @@ function Verify({ params }: { params: { token: string } }) {
       body: JSON.stringify({ token: params.token }),
     }).then((res) =>
       res.json().then((data) => {
-        if (data?.message === Results.SUCCESS) {
+        console.log(isVerified);
+        if (data?.isVerified) {
           setIsVerified(true);
           setIsSubmitting(false);
         } else {
@@ -30,8 +29,7 @@ function Verify({ params }: { params: { token: string } }) {
     <div>
       {isSubmitting ? (
         <>
-          <Loading />
-          <p>Verifying</p>
+          <p>Verifying ...</p>
         </>
       ) : (
         <>
@@ -40,7 +38,7 @@ function Verify({ params }: { params: { token: string } }) {
           ) : (
             <p className="text-error">The token is expired</p>
           )}
-          <a href="/users/auth">Start Using</a>
+          <a href="/">Start Using</a>
         </>
       )}
     </div>

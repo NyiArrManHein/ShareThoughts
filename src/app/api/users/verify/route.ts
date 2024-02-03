@@ -9,10 +9,13 @@ import {
 } from "@/lib/query/user/query";
 
 export async function POST(request: NextRequest) {
-  let message = Results.FAIL;
+  let isVerified = false;
+  let message = "Verification Failed";
   const response = new Response();
   const session = await getSession(request, response);
+
   const { token } = await request.json();
+
   const user = await getUserByVerifyTokenAndVerified(token, false);
   if (user) {
     const verifiedUser = await updateVerifiedByVerifyToken(token);
@@ -21,12 +24,14 @@ export async function POST(request: NextRequest) {
         session.user = verifiedUser as User;
         await session.save();
       }
-      message = Results.SUCCESS;
+      message = "User verified successfully.";
+      isVerified = verifiedUser.verified;
     }
   }
   return createResponse(
     response,
     JSON.stringify({
+      isVerified: isVerified,
       message: message,
     }),
     { status: 200 }

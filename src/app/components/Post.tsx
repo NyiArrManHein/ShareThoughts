@@ -1,5 +1,6 @@
 "use client";
 
+import { Post as PostModel } from "@prisma/client";
 import React, { useState } from "react";
 import {
   FaClock,
@@ -12,7 +13,7 @@ import {
   FaThumbsUp,
 } from "react-icons/fa";
 
-function Post() {
+function Post({ post }: { post: PostModel }) {
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
   return (
@@ -31,12 +32,12 @@ function Post() {
               </div>
             </div>
             <span className=" pt-2 pl-2">
-              johndoe
+              {post.authorName}
               <div className="flex flex-row text-xs">
                 <span className="pr-2">
                   <FaClock />
                 </span>
-                <span>Jan 18, 24</span>
+                <span>{post.createdAt?.toLocaleString()}</span>
               </div>
             </span>
           </div>
@@ -64,13 +65,8 @@ function Post() {
           </div>
         </span>
       </div>
-      <div className=" card-body text-lg sm:text-2xl pb-0">Title</div>
-      <div className=" card-body text-lg">
-        Learn how to form, develop, and express your ideas in paragraphs. Find
-        out what a paragraph is, how to decide what to put in it, and how to
-        organize it with different techniques. See a 5-step example of how to
-        write an illustration paragraph that supports your thesis with examples.
-      </div>
+      <div className=" card-body text-lg sm:text-2xl pb-0">{post.title}</div>
+      <div className=" card-body text-lg">{post.content}</div>
       <div className="w-full flex flex-row pt-2">
         <span className="flex w-full justify-center">1K</span>
         <span className="flex w-full justify-center">1K</span>
