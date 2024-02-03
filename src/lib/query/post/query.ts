@@ -4,16 +4,18 @@ import { PostType } from "@/lib/models";
 export async function getPostForNewsFeed() {
   const posts = await prisma.post.findMany({
     include: {
+      author: true,
       likes: true,
       comments: true,
       shares: true,
     },
   });
+
   return posts;
 }
 
 export async function insertPostByUsername(
-  authorName: string,
+  authorId: number,
   postType: PostType,
   title: string,
   content: string
@@ -22,7 +24,13 @@ export async function insertPostByUsername(
     data: {
       title: title,
       content: content,
-      authorName: authorName,
+      authorId: authorId,
+    },
+    include: {
+      author: true,
+      likes: true,
+      comments: true,
+      shares: true,
     },
   });
   return insertedPost;

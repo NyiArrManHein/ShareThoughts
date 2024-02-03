@@ -1,3 +1,5 @@
+import { Comment, Like, Share } from "@prisma/client";
+
 export type FlashMessage = {
   message: string;
   category: string;
@@ -10,6 +12,21 @@ export type User = {
   bio: string;
   sessionId: string;
   verified: boolean;
+};
+
+export type PostModel = {
+  id: number;
+  postType: PostType;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: number;
+  author: User;
+  likes: Like[];
+  comments: Comment[];
+  shares: Share[];
 };
 
 /**

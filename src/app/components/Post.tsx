@@ -1,6 +1,6 @@
 "use client";
 
-import { Post as PostModel } from "@prisma/client";
+import { PostModel } from "@/lib/models";
 import React, { useState } from "react";
 import {
   FaClock,
@@ -32,7 +32,7 @@ function Post({ post }: { post: PostModel }) {
               </div>
             </div>
             <span className=" pt-2 pl-2">
-              {post.authorName}
+              {post.author.username}
               <div className="flex flex-row text-xs">
                 <span className="pr-2">
                   <FaClock />
@@ -68,9 +68,11 @@ function Post({ post }: { post: PostModel }) {
       <div className=" card-body text-lg sm:text-2xl pb-0">{post.title}</div>
       <div className=" card-body text-lg">{post.content}</div>
       <div className="w-full flex flex-row pt-2">
-        <span className="flex w-full justify-center">1K</span>
-        <span className="flex w-full justify-center">1K</span>
-        <span className="flex w-full justify-center">6</span>
+        <span className="flex w-full justify-center">{post.likes.length}</span>
+        <span className="flex w-full justify-center">
+          {post.comments.length}
+        </span>
+        <span className="flex w-full justify-center">{post.shares.length}</span>
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">

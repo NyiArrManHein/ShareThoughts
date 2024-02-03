@@ -1,11 +1,10 @@
 "use client";
 
-import { FormEvent, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Post from "./components/Post";
 import { FaPlus } from "react-icons/fa";
 import useUser from "@/lib/useUser";
-import { PostType } from "@/lib/models";
-import { Post as PostModel } from "@prisma/client";
+import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
 
 export default function Home() {

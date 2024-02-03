@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   if (isLoggedIn) {
     const { postType, title, content } = await request.json();
     insertedPost = await insertPostByUsername(
-      currentUser?.username!,
+      currentUser?.id!,
       postType,
       title,
       content
