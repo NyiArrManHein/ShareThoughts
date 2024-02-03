@@ -2,7 +2,8 @@
 
 import { PostModel } from "@/lib/models";
 import { Reactions } from "@prisma/client";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
+import { IconType } from "react-icons";
 import {
   FaClock,
   FaComment,
@@ -10,25 +11,33 @@ import {
   FaLaugh,
   FaSadCry,
   FaShare,
-  FaSmile,
   FaThumbsUp,
 } from "react-icons/fa";
 
-function Post({ post }: { post: PostModel }) {
+function Post({ post, userId }: { post: PostModel; userId?: number }) {
   const [currentPost, setCurrentPost] = useState(post);
+  const [like, setLike] = useState<Reactions>(
+    currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
+  );
+  const [CurrentReaction, setCurrentReaction] = useState(<FaThumbsUp />);
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
 
   // Like Post
   const likePost = async (reaction: Reactions) => {
-    post.likes.push({
-      id: 1,
-      reaction: reaction,
-      userId: post.author.id,
-      postId: post.id,
-    });
-    console.log(post.likes);
-    setCurrentPost(post);
+    if (
+      userId &&
+      currentPost.likes.filter((like) => like.userId === userId)[0] ===
+        undefined
+    ) {
+      post.likes.push({
+        id: 1,
+        reaction: reaction,
+        userId: userId,
+        postId: post.id,
+      });
+      setCurrentPost(post);
+    }
   };
 
   return (
@@ -99,7 +108,7 @@ function Post({ post }: { post: PostModel }) {
         <span className="flex w-full justify-center">
           <div className="dropdown dropdown-hover dropdown-top">
             <span tabIndex={0} className="hover:text-primary cursor-pointer">
-              <FaThumbsUp />
+              <CurrentReaction />
             </span>
             <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
               <span

@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Post from "./components/Post";
 import { FaPlus } from "react-icons/fa";
 import useUser from "@/lib/useUser";
@@ -8,6 +8,9 @@ import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
 
 export default function Home() {
+  // Use User
+  const { data, isLoading, isError } = useUser();
+
   const [isAddPost, setIsAddPost] = useState(false);
 
   // Controllersaction=""
@@ -43,14 +46,12 @@ export default function Home() {
     });
     if (res.ok) {
       const { post, message } = await res.json();
-      setPosts([post, ...posts]);
+      const newPosts = [...posts, post].reverse();
+      setPosts(newPosts);
       setTitle("");
       setContent("");
     }
   };
-
-  // useUser
-  const { data, isLoading, isError } = useUser();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex flex-row w-full p-5">
@@ -82,7 +83,11 @@ export default function Home() {
           />
           <div>
             {posts.map((post) => (
-              <Post post={post} />
+              <Post
+                key={"post_" + post.id}
+                post={post}
+                userId={data.user?.id}
+              />
             ))}
           </div>
         </div>
