@@ -55,11 +55,12 @@ model Post {
 }
 
 model Like {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-  post   Post @relation(fields: [postId], references: [id])
-  postId Int
+  id       Int       @id @default(autoincrement())
+  reaction Reactions @default(LIKE)
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  post     Post      @relation(fields: [postId], references: [id])
+  postId   Int
 }
 
 model Comment {
@@ -116,4 +117,11 @@ enum PostType {
   PRIVATE
   PUBLIC
   ONLYME
+}
+
+enum Reactions {
+  LIKE
+  LOVE
+  HAHA
+  SAD
 }

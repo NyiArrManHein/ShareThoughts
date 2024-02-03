@@ -1,7 +1,8 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import React, { useState } from "react";
+import { Reactions } from "@prisma/client";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   FaClock,
   FaComment,
@@ -14,8 +15,22 @@ import {
 } from "react-icons/fa";
 
 function Post({ post }: { post: PostModel }) {
+  const [currentPost, setCurrentPost] = useState(post);
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
+
+  // Like Post
+  const likePost = async (reaction: Reactions) => {
+    post.likes.push({
+      id: 1,
+      reaction: reaction,
+      userId: post.author.id,
+      postId: post.id,
+    });
+    console.log(post.likes);
+    setCurrentPost(post);
+  };
+
   return (
     <div className="card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base">
       {/* Post head */}
@@ -32,12 +47,12 @@ function Post({ post }: { post: PostModel }) {
               </div>
             </div>
             <span className=" pt-2 pl-2">
-              {post.author.username}
+              {currentPost.author.username}
               <div className="flex flex-row text-xs">
                 <span className="pr-2">
                   <FaClock />
                 </span>
-                <span>{post.createdAt?.toLocaleString()}</span>
+                <span>{currentPost.createdAt?.toLocaleString()}</span>
               </div>
             </span>
           </div>
@@ -65,14 +80,20 @@ function Post({ post }: { post: PostModel }) {
           </div>
         </span>
       </div>
-      <div className=" card-body text-lg sm:text-2xl pb-0">{post.title}</div>
-      <div className=" card-body text-lg">{post.content}</div>
+      <div className=" card-body text-lg sm:text-2xl pb-0">
+        {currentPost.title}
+      </div>
+      <div className=" card-body text-lg">{currentPost.content}</div>
       <div className="w-full flex flex-row pt-2">
-        <span className="flex w-full justify-center">{post.likes.length}</span>
         <span className="flex w-full justify-center">
-          {post.comments.length}
+          {currentPost.likes.length}
         </span>
-        <span className="flex w-full justify-center">{post.shares.length}</span>
+        <span className="flex w-full justify-center">
+          {currentPost.comments.length}
+        </span>
+        <span className="flex w-full justify-center">
+          {currentPost.shares.length}
+        </span>
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">
@@ -81,17 +102,29 @@ function Post({ post }: { post: PostModel }) {
               <FaThumbsUp />
             </span>
             <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
-              <span className="text-2xl pr-3 text-warning hover:text-3xl">
-                <FaSmile />
+              <span
+                className="text-2xl pr-3 text-primary hover:text-3xl"
+                onClick={() => likePost(Reactions.LIKE)}
+              >
+                <FaThumbsUp />
               </span>
-              <span className="text-2xl pr-3 text-warning hover:text-3xl">
-                <FaSadCry />
+              <span
+                className="text-2xl pr-3 text-error hover:text-3xl"
+                onClick={() => likePost(Reactions.LOVE)}
+              >
+                <FaHeart />
               </span>
-              <span className="text-2xl pr-3 text-warning hover:text-3xl">
+              <span
+                className="text-2xl pr-3 text-warning hover:text-3xl"
+                onClick={() => likePost(Reactions.HAHA)}
+              >
                 <FaLaugh />
               </span>
-              <span className="text-2xl pr-3 text-error hover:text-3xl">
-                <FaHeart />
+              <span
+                className="text-2xl pr-3 text-warning hover:text-3xl"
+                onClick={() => likePost(Reactions.SAD)}
+              >
+                <FaSadCry />
               </span>
             </div>
           </div>

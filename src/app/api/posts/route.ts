@@ -5,6 +5,7 @@ import {
   getPostForNewsFeed,
   insertPostByUsername,
 } from "@/lib/query/post/query";
+import { Results } from "@/lib/models";
 
 export async function GET(request: NextRequest) {
   const response = new Response();
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   let insertedPost = undefined;
+  let message: string = Results.REQUIRED_LOGIN;
   const response = new Response();
   const { isLoggedIn, currentUser } = await isAuth(request, response);
   if (isLoggedIn) {
@@ -26,18 +28,13 @@ export async function POST(request: NextRequest) {
       title,
       content
     );
+    message = insertedPost ? "Uploaded the post successfully" : message;
   }
-  return createResponse(response, JSON.stringify({ post: insertedPost }), {
-    status: 200,
-  });
+  return createResponse(
+    response,
+    JSON.stringify({ post: insertedPost, message }),
+    {
+      status: 200,
+    }
+  );
 }
-
-// fetchUserByResetPasswordToken()
-//   .then(async () => {
-//     await prisma.$disconnect();
-//   })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });

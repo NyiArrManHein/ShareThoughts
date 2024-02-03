@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import Post from "./components/Post";
 import { FaPlus } from "react-icons/fa";
 import useUser from "@/lib/useUser";
@@ -26,6 +26,7 @@ export default function Home() {
     );
   }, []);
 
+  // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
@@ -41,8 +42,10 @@ export default function Home() {
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      const { post } = await res.json();
+      const { post, message } = await res.json();
       setPosts([post, ...posts]);
+      setTitle("");
+      setContent("");
     }
   };
 

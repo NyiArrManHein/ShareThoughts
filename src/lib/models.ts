@@ -15,6 +15,7 @@ export type User = {
 };
 
 export type PostModel = {
+  [x: string]: {};
   id: number;
   postType: PostType;
   createdAt: Date;
