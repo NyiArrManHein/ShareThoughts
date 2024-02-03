@@ -6,37 +6,10 @@ export type FlashMessage = {
 export type User = {
   id: number;
   accountType: AccountType;
-  joinedAt: Date;
-  firstName: string;
-  lastName: string;
   username: string;
-  email: string;
-  bod: Date;
-  gender: Gender;
-  role: Role;
   bio: string;
   sessionId: string;
   verified: boolean;
-};
-/**
- * Post
- */
-export type Post = {
-  id: number;
-  postType: PostType;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  content: string;
-  published: Boolean;
-  authorName: string;
-  likes: Like[];
-};
-
-export type Like = {
-  id: number;
-  userId: number;
-  postId: number;
 };
 
 /**

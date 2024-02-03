@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server";
-import { Results, User } from "@/lib/models";
+import { User } from "@/lib/models";
 import { createResponse, getSession } from "@/lib/session";
-import prisma from "@/db";
 import {
-  fetchUserByResetPasswordToken,
   getUserByVerifyTokenAndVerified,
   updateVerifiedByVerifyToken,
 } from "@/lib/query/user/query";
@@ -37,13 +35,3 @@ export async function POST(request: NextRequest) {
     { status: 200 }
   );
 }
-
-fetchUserByResetPasswordToken()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });

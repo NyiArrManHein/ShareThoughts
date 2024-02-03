@@ -1,8 +1,14 @@
 import prisma from "@/db";
-import { Post, PostType } from "@/lib/models";
+import { PostType } from "@/lib/models";
 
 export async function getPostForNewsFeed() {
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+    include: {
+      likes: true,
+      comments: true,
+      shares: true,
+    },
+  });
   return posts;
 }
 

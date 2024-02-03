@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { Resend } from "resend";
 import nodemailer from "nodemailer";
 import { getSession } from "./session";
-import { getUserByEmail } from "./query/user/query";
+import { getUserByUsername } from "./query/user/query";
 import { User } from "./models";
 
 export function generateToken(): string {
@@ -96,7 +96,7 @@ export async function isAuth(request: Request, response: Response) {
   const session = await getSession(request, response);
   const { user } = session;
   if (user) {
-    const dbUser = await getUserByEmail(user?.email);
+    const dbUser = await getUserByUsername(user.username);
     if (dbUser && user.sessionId === dbUser.sessionId) {
       session.user = dbUser as unknown as User;
       await session.save();

@@ -137,9 +137,8 @@ export async function insertUser(
           })
         );
         msg = sentEmailId
-          ? msg + ` And sent the verification link to ${registeredUser.email}.`
-          : msg +
-            ` Failed to send the verification link to ${registeredUser.email}`;
+          ? msg + ` And sent the verification link to ${user.email}.`
+          : msg + ` Failed to send the verification link to ${user.email}`;
         // return sentEmailId ? (user as User) : undefined;
       } else {
         msg = "Failed to register the user.";
