@@ -3,7 +3,6 @@
 import { PostModel } from "@/lib/models";
 import { Reactions } from "@prisma/client";
 import React, { useState } from "react";
-import { IconType } from "react-icons";
 import {
   FaClock,
   FaComment,
@@ -16,27 +15,28 @@ import {
 
 function Post({ post, userId }: { post: PostModel; userId?: number }) {
   const [currentPost, setCurrentPost] = useState(post);
-  const [like, setLike] = useState<Reactions>(
+  const [reaction, setReaction] = useState<Reactions>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
-  const [CurrentReaction, setCurrentReaction] = useState(<FaThumbsUp />);
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
 
   // Like Post
   const likePost = async (reaction: Reactions) => {
-    if (
-      userId &&
-      currentPost.likes.filter((like) => like.userId === userId)[0] ===
-        undefined
-    ) {
+    if (userId) {
+      const reactedPost = post.likes.filter((like) => like.userId !== userId);
+      post.likes = reactedPost;
       post.likes.push({
         id: 1,
         reaction: reaction,
         userId: userId,
         postId: post.id,
       });
+      // setting the post to update the UI
       setCurrentPost(post);
+
+      // Setting new reaction to update the UI
+      setReaction(reaction);
     }
   };
 
@@ -108,7 +108,19 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
         <span className="flex w-full justify-center">
           <div className="dropdown dropdown-hover dropdown-top">
             <span tabIndex={0} className="hover:text-primary cursor-pointer">
-              <CurrentReaction />
+              {reaction ? (
+                reaction === "HAHA" ? (
+                  <FaLaugh />
+                ) : reaction === "LIKE" ? (
+                  <FaThumbsUp />
+                ) : reaction === "LOVE" ? (
+                  <FaHeart />
+                ) : (
+                  <FaSadCry />
+                )
+              ) : (
+                <FaThumbsUp />
+              )}
             </span>
             <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
               <span
