@@ -15,14 +15,20 @@ export async function insertIntoReact(
     },
   });
   if (reaction) {
-    react = await prisma.like.update({
-      where: {
-        id: reaction.id,
-      },
-      data: {
-        reaction: reactionType,
-      },
-    });
+    if (reaction.reaction === reactionType) {
+      react = await prisma.like.delete({ where: { id: reaction.id } });
+      message = "Deleted reaction.";
+    } else {
+      react = await prisma.like.update({
+        where: {
+          id: reaction.id,
+        },
+        data: {
+          reaction: reactionType,
+        },
+      });
+      message = "Updated reaction.";
+    }
   } else {
     react = await prisma.like.create({
       data: {
@@ -31,6 +37,7 @@ export async function insertIntoReact(
         postId,
       },
     });
+    message = "Created the reaction.";
   }
   return { react, message };
 }

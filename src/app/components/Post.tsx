@@ -15,7 +15,7 @@ import {
 
 function Post({ post, userId }: { post: PostModel; userId?: number }) {
   const [currentPost, setCurrentPost] = useState(post);
-  const [reaction, setReaction] = useState<Reactions>(
+  const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
   const [isComment, setIsComment] = useState(false);
@@ -40,17 +40,26 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
         const { react, message }: { react: Like | undefined; message: string } =
           await res.json();
         if (react) {
+          const isThereReaction = post.likes.filter(
+            (like) => like.userId === react.userId && like.reaction === reaction
+          )[0];
           const reactedPost = post.likes.filter(
             (like) => like.userId !== react.userId
           );
           post.likes = reactedPost;
-          post.likes.push(react);
-          // setting the post to update the UI
-          setCurrentPost(post);
+          if (isThereReaction === undefined) {
+            post.likes.push(react);
+            // setting the post to update the UI
 
-          // Setting new reaction to update the UI
-          setReaction(reaction);
+            // Setting new reaction to update the UI
+            setReaction(reaction);
+          } else {
+            setReaction(undefined);
+          }
+          setCurrentPost(post);
+          // alert(message);
         } else {
+          alert(message);
         }
       }
     }
