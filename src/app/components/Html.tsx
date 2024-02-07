@@ -32,8 +32,15 @@ function Html({ children }: { children: ReactNode }) {
   };
 
   return (
-    <html lang="en" data-theme={theme ? "dark" : "cupcake"}>
-      <body suppressHydrationWarning={true} className={inter.className}>
+    <html
+      lang="en"
+      data-theme={theme ? "dark" : "cupcake"}
+      className="w-screen"
+    >
+      <body
+        suppressHydrationWarning={true}
+        className={inter.className + " w-full overflow-x-hidden"}
+      >
         <Navbar
           theme={theme}
           setTheme={setTheme}

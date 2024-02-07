@@ -20,7 +20,7 @@ function Navbar({
   isLoading: boolean;
 }) {
   return (
-    <div className="navbar bg-base-200 top-0 sticky z-50">
+    <nav className="navbar bg-base-200 top-0 sticky z-50 w-full">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">ST</a>
       </div>
@@ -108,7 +108,7 @@ function Navbar({
           <a href="/auth">Login</a>
         )}
       </div>
-    </div>
+    </nav>
   );
 }
 
