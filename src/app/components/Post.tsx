@@ -1,7 +1,7 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import { Reactions } from "@prisma/client";
+import { Like, Reactions } from "@prisma/client";
 import React, { useState } from "react";
 import {
   FaClock,
@@ -22,21 +22,37 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
   const [comment, setComment] = useState("");
 
   // Like Post
-  const likePost = async (reaction: Reactions) => {
+  const reactPost = async (reaction: Reactions) => {
     if (userId) {
-      const reactedPost = post.likes.filter((like) => like.userId !== userId);
-      post.likes = reactedPost;
-      post.likes.push({
-        id: 1,
-        reaction: reaction,
-        userId: userId,
+      // Send to the server
+      const data = {
         postId: post.id,
+        reactionType: reaction,
+      };
+      const res = await fetch("/api/posts/react/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-      // setting the post to update the UI
-      setCurrentPost(post);
+      if (res.ok) {
+        const { react, message }: { react: Like | undefined; message: string } =
+          await res.json();
+        if (react) {
+          const reactedPost = post.likes.filter(
+            (like) => like.userId !== react.userId
+          );
+          post.likes = reactedPost;
+          post.likes.push(react);
+          // setting the post to update the UI
+          setCurrentPost(post);
 
-      // Setting new reaction to update the UI
-      setReaction(reaction);
+          // Setting new reaction to update the UI
+          setReaction(reaction);
+        } else {
+        }
+      }
     }
   };
 
@@ -106,7 +122,7 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">
-          <div className="dropdown dropdown-top">
+          <div className="dropdown dropdown-hover dropdown-top">
             <span
               tabIndex={0}
               className="hover:text-primary cursor-pointer"
@@ -129,29 +145,29 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
             <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
               <span
                 className="text-2xl pr-3 text-primary hover:text-3xl"
-                onClick={() => likePost(Reactions.LIKE)}
-                onTouchStart={() => likePost(Reactions.LIKE)}
+                onClick={() => reactPost(Reactions.LIKE)}
+                onTouchStart={() => reactPost(Reactions.LIKE)}
               >
                 <FaThumbsUp />
               </span>
               <span
                 className="text-2xl pr-3 text-error hover:text-3xl"
-                onClick={() => likePost(Reactions.LOVE)}
-                onTouchStart={() => likePost(Reactions.LOVE)}
+                onClick={() => reactPost(Reactions.LOVE)}
+                onTouchStart={() => reactPost(Reactions.LOVE)}
               >
                 <FaHeart />
               </span>
               <span
                 className="text-2xl pr-3 text-warning hover:text-3xl"
-                onClick={() => likePost(Reactions.HAHA)}
-                onTouchStart={() => likePost(Reactions.HAHA)}
+                onClick={() => reactPost(Reactions.HAHA)}
+                onTouchStart={() => reactPost(Reactions.HAHA)}
               >
                 <FaLaugh />
               </span>
               <span
                 className="text-2xl pr-3 text-warning hover:text-3xl"
-                onClick={() => likePost(Reactions.SAD)}
-                onTouchStart={() => likePost(Reactions.SAD)}
+                onClick={() => reactPost(Reactions.SAD)}
+                onTouchStart={() => reactPost(Reactions.SAD)}
               >
                 <FaSadCry />
               </span>

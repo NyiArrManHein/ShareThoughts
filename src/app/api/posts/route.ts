@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   }
   return createResponse(
     response,
-    JSON.stringify({ post: insertedPost, message }),
+    JSON.stringify({ post: insertedPost, message: message }),
     {
       status: 200,
     }
