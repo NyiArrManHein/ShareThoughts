@@ -13,7 +13,15 @@ import {
   FaThumbsUp,
 } from "react-icons/fa";
 
-function Post({ post, userId }: { post: PostModel; userId?: number }) {
+function Post({
+  post,
+  userId,
+  deletePostFromTheList,
+}: {
+  post: PostModel;
+  userId?: number;
+  deletePostFromTheList: (postId: number) => void;
+}) {
   const [currentPost, setCurrentPost] = useState(post);
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
@@ -65,6 +73,28 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
     }
   };
 
+  // Delete Post
+  const deletePost = async () => {
+    const data = {
+      postId: currentPost.id,
+    };
+    const res = await fetch("/api/posts/", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const { isDeleted, message }: { isDeleted: boolean; message: string } =
+        await res.json();
+      if (isDeleted) {
+        // Delete Post
+        deletePostFromTheList(currentPost.id);
+      } else {
+        alert(message);
+      }
+    }
+  };
+
   return (
     <div className="card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base">
       {/* Post head */}
@@ -105,7 +135,7 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
                 <a>Edit</a>
               </li>
               <li>
-                <a>Delete</a>
+                <a onClick={() => deletePost()}>Delete</a>
               </li>
               <li>
                 <a>Report</a>
@@ -153,28 +183,44 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
             </span>
             <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
               <span
-                className="text-2xl pr-3 text-primary hover:text-3xl"
+                className={
+                  reaction === Reactions.LIKE
+                    ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded p-2"
+                    : "text-2xl pr-3 text-primary hover:text-3xl p-2"
+                }
                 onClick={() => reactPost(Reactions.LIKE)}
                 onTouchStart={() => reactPost(Reactions.LIKE)}
               >
                 <FaThumbsUp />
               </span>
               <span
-                className="text-2xl pr-3 text-error hover:text-3xl"
+                className={
+                  reaction === Reactions.LOVE
+                    ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded p-2"
+                    : "text-2xl pr-3 text-error hover:text-3xl p-2"
+                }
                 onClick={() => reactPost(Reactions.LOVE)}
                 onTouchStart={() => reactPost(Reactions.LOVE)}
               >
                 <FaHeart />
               </span>
               <span
-                className="text-2xl pr-3 text-warning hover:text-3xl"
+                className={
+                  reaction === Reactions.HAHA
+                    ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                    : "text-2xl pr-3 text-warning hover:text-3xl p-2"
+                }
                 onClick={() => reactPost(Reactions.HAHA)}
                 onTouchStart={() => reactPost(Reactions.HAHA)}
               >
                 <FaLaugh />
               </span>
               <span
-                className="text-2xl pr-3 text-warning hover:text-3xl"
+                className={
+                  reaction === Reactions.SAD
+                    ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                    : "text-2xl pr-3 text-warning hover:text-3xl p-2"
+                }
                 onClick={() => reactPost(Reactions.SAD)}
                 onTouchStart={() => reactPost(Reactions.SAD)}
               >

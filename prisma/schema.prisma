@@ -47,7 +47,7 @@ model Post {
   title     String
   content   String
   published Boolean?  @default(false)
-  author    User      @relation(fields: [authorId], references: [id])
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
   likes     Like[]
   comments  Comment[]
@@ -57,26 +57,26 @@ model Post {
 model Like {
   id       Int       @id @default(autoincrement())
   reaction Reactions @default(LIKE)
-  user     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
-  post     Post      @relation(fields: [postId], references: [id])
+  post     Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId   Int
 }
 
 model Comment {
   id      Int    @id @default(autoincrement())
   content String
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int
-  post    Post   @relation(fields: [postId], references: [id])
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId  Int
 }
 
 model Share {
   id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
-  post   Post @relation(fields: [postId], references: [id])
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId Int
 }
 

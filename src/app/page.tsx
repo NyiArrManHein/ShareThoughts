@@ -52,6 +52,10 @@ export default function Home() {
       setContent("");
     }
   };
+  const deletePostFromTheList = (postId: number) => {
+    const newPosts = posts.filter((post) => post.id !== postId);
+    setPosts(newPosts);
+  };
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex flex-row w-full p-5">
@@ -87,6 +91,7 @@ export default function Home() {
                 key={"post_" + post.id}
                 post={post}
                 userId={data.user?.id}
+                deletePostFromTheList={deletePostFromTheList}
               />
             ))}
           </div>
