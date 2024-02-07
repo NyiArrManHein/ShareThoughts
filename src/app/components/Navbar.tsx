@@ -24,7 +24,7 @@ function Navbar({
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">ST</a>
       </div>
-      <div className="flex-none gap-2">
+      <div className="flex-none gap-2 pr-2">
         {/* Theme Changer */}
         <div className="flex flex-row" onClick={() => setTheme(!theme)}>
           <span className={theme ? "px-1" : "px-1 text-warning"}>

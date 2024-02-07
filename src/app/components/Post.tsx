@@ -68,7 +68,7 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
         </span>
         {/* Right head: Actions */}
         <span className=" text-right">
-          <div className="dropdown">
+          <div className="dropdown dropdown-left sm:dropdown-right">
             <div tabIndex={0} role="button" className="m-1">
               ...
             </div>
@@ -106,8 +106,12 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">
-          <div className="dropdown dropdown-hover dropdown-top">
-            <span tabIndex={0} className="hover:text-primary cursor-pointer">
+          <div className="dropdown dropdown-top">
+            <span
+              tabIndex={0}
+              className="hover:text-primary cursor-pointer"
+              // onTouchStart={() => likePost(Reactions.LIKE)}
+            >
               {reaction ? (
                 reaction === "HAHA" ? (
                   <FaLaugh />
@@ -126,24 +130,28 @@ function Post({ post, userId }: { post: PostModel; userId?: number }) {
               <span
                 className="text-2xl pr-3 text-primary hover:text-3xl"
                 onClick={() => likePost(Reactions.LIKE)}
+                onTouchStart={() => likePost(Reactions.LIKE)}
               >
                 <FaThumbsUp />
               </span>
               <span
                 className="text-2xl pr-3 text-error hover:text-3xl"
                 onClick={() => likePost(Reactions.LOVE)}
+                onTouchStart={() => likePost(Reactions.LOVE)}
               >
                 <FaHeart />
               </span>
               <span
                 className="text-2xl pr-3 text-warning hover:text-3xl"
                 onClick={() => likePost(Reactions.HAHA)}
+                onTouchStart={() => likePost(Reactions.HAHA)}
               >
                 <FaLaugh />
               </span>
               <span
                 className="text-2xl pr-3 text-warning hover:text-3xl"
                 onClick={() => likePost(Reactions.SAD)}
+                onTouchStart={() => likePost(Reactions.SAD)}
               >
                 <FaSadCry />
               </span>
