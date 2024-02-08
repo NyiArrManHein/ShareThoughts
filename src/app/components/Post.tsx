@@ -23,6 +23,7 @@ function Post({
   deletePostFromTheList: (postId: number) => void;
 }) {
   const [currentPost, setCurrentPost] = useState(post);
+  const [showReactions, setShowReactions] = useState(true);
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
@@ -71,6 +72,7 @@ function Post({
         }
       }
     }
+    setShowReactions(!showReactions);
   };
 
   // Delete Post
@@ -161,11 +163,62 @@ function Post({
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
         <span className="flex w-full justify-center">
-          <div className="dropdown dropdown-hover dropdown-top">
+          <div
+            className={
+              showReactions ? " flex flex-row w-full justify-center" : "hidden"
+            }
+            onMouseLeave={() => setShowReactions(false)}
+          >
+            <span
+              className={
+                reaction === Reactions.LIKE
+                  ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded p-2"
+                  : "text-2xl pr-3 text-primary hover:text-3xl p-2"
+              }
+              onClick={() => reactPost(Reactions.LIKE)}
+              onTouchStart={() => reactPost(Reactions.LIKE)}
+            >
+              <FaThumbsUp />
+            </span>
+            <span
+              className={
+                reaction === Reactions.LOVE
+                  ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded p-2"
+                  : "text-2xl pr-3 text-error hover:text-3xl p-2"
+              }
+              onClick={() => reactPost(Reactions.LOVE)}
+              onTouchStart={() => reactPost(Reactions.LOVE)}
+            >
+              <FaHeart />
+            </span>
+            <span
+              className={
+                reaction === Reactions.HAHA
+                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                  : "text-2xl pr-3 text-warning hover:text-3xl p-2"
+              }
+              onClick={() => reactPost(Reactions.HAHA)}
+              onTouchStart={() => reactPost(Reactions.HAHA)}
+            >
+              <FaLaugh />
+            </span>
+            <span
+              className={
+                reaction === Reactions.SAD
+                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                  : "text-2xl pr-3 text-warning hover:text-3xl p-2"
+              }
+              onClick={() => reactPost(Reactions.SAD)}
+              onTouchStart={() => reactPost(Reactions.SAD)}
+            >
+              <FaSadCry />
+            </span>
+          </div>
+          <div className={showReactions ? "hidden" : ""}>
             <span
               tabIndex={0}
-              className="hover:text-primary cursor-pointer"
-              // onTouchStart={() => likePost(Reactions.LIKE)}
+              className="hover:text-primary cursor-pointer text-2xl"
+              onClick={() => setShowReactions(!showReactions)}
             >
               {reaction ? (
                 reaction === "HAHA" ? (
@@ -181,52 +234,6 @@ function Post({
                 <FaThumbsUp />
               )}
             </span>
-            <div className=" flex flex-row dropdown-content z-[1] menu p-2 w-96">
-              <span
-                className={
-                  reaction === Reactions.LIKE
-                    ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded p-2"
-                    : "text-2xl pr-3 text-primary hover:text-3xl p-2"
-                }
-                onClick={() => reactPost(Reactions.LIKE)}
-                onTouchStart={() => reactPost(Reactions.LIKE)}
-              >
-                <FaThumbsUp />
-              </span>
-              <span
-                className={
-                  reaction === Reactions.LOVE
-                    ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded p-2"
-                    : "text-2xl pr-3 text-error hover:text-3xl p-2"
-                }
-                onClick={() => reactPost(Reactions.LOVE)}
-                onTouchStart={() => reactPost(Reactions.LOVE)}
-              >
-                <FaHeart />
-              </span>
-              <span
-                className={
-                  reaction === Reactions.HAHA
-                    ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
-                    : "text-2xl pr-3 text-warning hover:text-3xl p-2"
-                }
-                onClick={() => reactPost(Reactions.HAHA)}
-                onTouchStart={() => reactPost(Reactions.HAHA)}
-              >
-                <FaLaugh />
-              </span>
-              <span
-                className={
-                  reaction === Reactions.SAD
-                    ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
-                    : "text-2xl pr-3 text-warning hover:text-3xl p-2"
-                }
-                onClick={() => reactPost(Reactions.SAD)}
-                onTouchStart={() => reactPost(Reactions.SAD)}
-              >
-                <FaSadCry />
-              </span>
-            </div>
           </div>
         </span>
         <span
