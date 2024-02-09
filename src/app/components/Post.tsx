@@ -23,7 +23,7 @@ function Post({
   deletePostFromTheList: (postId: number) => void;
 }) {
   const [currentPost, setCurrentPost] = useState(post);
-  const [showReactions, setShowReactions] = useState(true);
+  const [showReactions, setShowReactions] = useState(false);
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
@@ -172,7 +172,7 @@ function Post({
             <span
               className={
                 reaction === Reactions.LIKE
-                  ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded p-2"
+                  ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded-full p-3"
                   : "text-2xl pr-3 text-primary hover:text-3xl p-2"
               }
               onClick={() => reactPost(Reactions.LIKE)}
@@ -183,7 +183,7 @@ function Post({
             <span
               className={
                 reaction === Reactions.LOVE
-                  ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded p-2"
+                  ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded-full p-3"
                   : "text-2xl pr-3 text-error hover:text-3xl p-2"
               }
               onClick={() => reactPost(Reactions.LOVE)}
@@ -194,7 +194,7 @@ function Post({
             <span
               className={
                 reaction === Reactions.HAHA
-                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
                   : "text-2xl pr-3 text-warning hover:text-3xl p-2"
               }
               onClick={() => reactPost(Reactions.HAHA)}
@@ -205,7 +205,7 @@ function Post({
             <span
               className={
                 reaction === Reactions.SAD
-                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded p-2"
+                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
                   : "text-2xl pr-3 text-warning hover:text-3xl p-2"
               }
               onClick={() => reactPost(Reactions.SAD)}
