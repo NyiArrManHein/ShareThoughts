@@ -37,6 +37,7 @@ model User {
   followers     Follower[]     @relation("follower")
   following     Follower[]     @relation("following")
   Notifications Notification[]
+  Reply         Reply[]
 }
 
 model Post {
@@ -64,12 +65,22 @@ model Like {
 }
 
 model Comment {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   content String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int
-  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId  Int
+  Reply   Reply[]
+}
+
+model Reply {
+  id        Int     @id @default(autoincrement())
+  content   String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
 }
 
 model Share {

@@ -1,7 +1,7 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import { Like, Reactions } from "@prisma/client";
+import { Comment as CommentModel, Like, Reactions } from "@prisma/client";
 import React, { useState } from "react";
 import {
   FaClock,
@@ -12,6 +12,7 @@ import {
   FaShare,
   FaThumbsUp,
 } from "react-icons/fa";
+import CommentComponent from "./CommentComponent";
 
 function Post({
   post,
@@ -29,8 +30,12 @@ function Post({
   );
   const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
+  const [insertedComments, setInsertedComments] = useState<CommentModel[]>([]);
 
-  // Like Post
+  /**
+   * Reacting the Post
+   * @param reaction
+   */
   const reactPost = async (reaction: Reactions) => {
     if (userId) {
       // Send to the server
@@ -75,7 +80,9 @@ function Post({
     setShowReactions(!showReactions);
   };
 
-  // Delete Post
+  /**
+   * Delete Post
+   */
   const deletePost = async () => {
     const data = {
       postId: currentPost.id,
@@ -91,6 +98,39 @@ function Post({
       if (isDeleted) {
         // Delete Post
         deletePostFromTheList(currentPost.id);
+      } else {
+        alert(message);
+      }
+    }
+  };
+
+  /**
+   *
+   * @param e
+   */
+  const commentPost = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = {
+      postId: currentPost.id,
+      commentContent: comment,
+    };
+    const res = await fetch("/api/posts/comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      // Receive Data from server
+      const { comment, message }: { comment: CommentModel; message: string } =
+        await res.json();
+      if (comment) {
+        currentPost.comments.push(comment);
+        setInsertedComments([...insertedComments, comment]);
+        setComment("");
       } else {
         alert(message);
       }
@@ -250,13 +290,22 @@ function Post({
           </span>
         </span>
       </div>
-      <div className={isComment ? "" : "hidden"}>
-        <form>
+      {/* Comment Section (Input) */}
+      <div className={isComment ? " pt-2" : "hidden"}>
+        <span className="flex flex-col">
+          {insertedComments.map((insertedComment) => (
+            <CommentComponent
+              key={"commentId" + insertedComment.id}
+              comment={insertedComment}
+            />
+          ))}
+        </span>
+        <form onSubmit={commentPost}>
           <label>Comment</label>
           <textarea
             className="input input-bordered w-full"
-            name="comment"
-            id="comment_postId"
+            name="commentContent"
+            id="commentContent"
             value={comment}
             onChange={(e) => setComment(e.currentTarget.value)}
           />
