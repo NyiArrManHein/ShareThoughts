@@ -34,14 +34,9 @@ export async function POST(request: NextRequest) {
       if (sessionId) {
         session.user = {
           id: user.id,
-          firstName: user.firstName!,
-          lastName: user.lastName!,
           username: user.username,
-          joinedAt: user.joinedAt,
-          email: user.email,
-          gender: user.gender,
+          accountType: user.accountType,
           role: user.role,
-          bod: user.bod!,
           bio: user.bio!,
           verified: user.verified,
           sessionId: sessionId,

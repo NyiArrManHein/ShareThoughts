@@ -6,10 +6,11 @@ import Login from "../components/Login";
 import { FlashMessage } from "@/lib/models";
 
 function Auth() {
-  const [isRegister, setIsRegister] = useState(false);
+  const [isRegister, setIsRegister] = useState(true);
   const [flashMessage, setFlashMessage] = useState<FlashMessage | undefined>(
     undefined
   );
+
   return (
     <main className="flex flex-row justify-center mt-4">
       {isRegister ? (

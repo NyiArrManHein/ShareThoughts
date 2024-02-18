@@ -8,6 +8,7 @@ export type FlashMessage = {
 export type User = {
   id: number;
   accountType: AccountType;
+  role: Role;
   username: string;
   bio: string;
   sessionId: string;
