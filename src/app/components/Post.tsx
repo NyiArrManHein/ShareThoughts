@@ -2,7 +2,7 @@
 
 import { PostModel } from "@/lib/models";
 import { Comment as CommentModel, Like, Reactions } from "@prisma/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaClock,
   FaComment,
@@ -28,9 +28,10 @@ function Post({
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
-  const [isComment, setIsComment] = useState(false);
   const [comment, setComment] = useState("");
-  const [insertedComments, setInsertedComments] = useState<CommentModel[]>([]);
+  const [commentList, setCommentList] = useState<CommentModel[]>(
+    currentPost.comments
+  );
 
   /**
    * Reacting the Post
@@ -129,12 +130,17 @@ function Post({
         await res.json();
       if (comment) {
         currentPost.comments.push(comment);
-        setInsertedComments([...insertedComments, comment]);
+        setCommentList([...commentList, comment]);
         setComment("");
       } else {
         alert(message);
       }
     }
+  };
+
+  const showComments = async () => {
+    // @ts-ignore
+    document.getElementById("comment_modal")!.showModal();
   };
 
   return (
@@ -278,7 +284,7 @@ function Post({
         </span>
         <span
           className="flex w-full justify-center"
-          onClick={() => setIsComment(!isComment)}
+          onClick={() => showComments()}
         >
           <span className="hover:text-primary cursor-pointer">
             <FaComment />
@@ -290,32 +296,40 @@ function Post({
           </span>
         </span>
       </div>
-      {/* Comment Section (Input) */}
-      <div className={isComment ? " pt-2" : "hidden"}>
-        <span className="flex flex-col">
-          {insertedComments.map((insertedComment) => (
-            <CommentComponent
-              key={"commentId" + insertedComment.id}
-              comment={insertedComment}
-            />
-          ))}
-        </span>
-        <form onSubmit={commentPost}>
-          <label>Comment</label>
-          <textarea
-            className="input input-bordered w-full"
-            name="commentContent"
-            id="commentContent"
-            value={comment}
-            onChange={(e) => setComment(e.currentTarget.value)}
-          />
-          <input
-            type="submit"
-            className="btn btn-primary float-right mt-2"
-            value="Submit"
-          />
+      {/* Comment Section */}
+      <dialog id="comment_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Comment Section</h3>
+          <p className="py-4">
+            <span className="flex flex-col">
+              {commentList.map((_comment) => (
+                <CommentComponent
+                  key={"commentId" + _comment.id}
+                  comment={_comment}
+                />
+              ))}
+            </span>
+            <form onSubmit={commentPost}>
+              <label>Comment</label>
+              <textarea
+                className="input input-bordered w-full"
+                name="commentContent"
+                id="commentContent"
+                value={comment}
+                onChange={(e) => setComment(e.currentTarget.value)}
+              />
+              <input
+                type="submit"
+                className="btn btn-primary float-right mt-2"
+                value="Submit"
+              />
+            </form>
+          </p>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
         </form>
-      </div>
+      </dialog>
     </div>
   );
 }
