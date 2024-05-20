@@ -54,3 +54,14 @@ export async function deletePostById(postId: number, userId: number) {
 
   return { isDeleted, message };
 }
+
+export async function getComment(postId: number) {
+  let message: string = "Failed to fetch comments";
+  const comments = await prisma.comment.findMany({
+    where: { postId: postId },
+    include: {
+      user: true,
+    },
+  });
+  return { comments, message };
+}

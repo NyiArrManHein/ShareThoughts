@@ -1,8 +1,9 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import { Comment as CommentModel, Like, Reactions } from "@prisma/client";
-import React, { useEffect, useState } from "react";
+import { Like, Reactions } from "@prisma/client";
+import { CommentModel } from "@/lib/models";
+import React, { useState } from "react";
 import {
   FaClock,
   FaComment,
@@ -29,9 +30,7 @@ function Post({
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
   const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState<CommentModel[]>(
-    currentPost.comments
-  );
+  const [commentList, setCommentList] = useState<CommentModel[]>([]);
 
   /**
    * Reacting the Post
@@ -139,8 +138,19 @@ function Post({
   };
 
   const showComments = async () => {
+    const res = await fetch(`/api/posts/comment?postId=${post.id}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      const { comments, message } = await res.json();
+      setCommentList(comments);
+    } else {
+      alert("Connection failed.");
+    }
+    console.log(commentList);
     // @ts-ignore
-    document.getElementById("comment_modal")!.showModal();
+    document.getElementById(`comment_modal_${currentPost.id}`)!.showModal();
   };
 
   return (
@@ -297,10 +307,10 @@ function Post({
         </span>
       </div>
       {/* Comment Section */}
-      <dialog id="comment_modal" className="modal">
+      <dialog id={"comment_modal_" + post.id} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Comment Section</h3>
-          <p className="py-4">
+          <div className="py-4">
             <span className="flex flex-col">
               {commentList.map((_comment) => (
                 <CommentComponent
@@ -324,7 +334,7 @@ function Post({
                 value="Submit"
               />
             </form>
-          </p>
+          </div>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>

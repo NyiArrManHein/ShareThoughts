@@ -27,8 +27,16 @@ export type PostModel = {
   authorId: number;
   author: User;
   likes: Like[];
-  comments: Comment[];
+  comments: CommentModel[];
   shares: Share[];
+};
+
+export type CommentModel = {
+  id: number;
+  user: User;
+  content: string;
+  userId: number;
+  postId: number;
 };
 
 /**
