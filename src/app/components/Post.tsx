@@ -24,13 +24,14 @@ function Post({
   userId?: number;
   deletePostFromTheList: (postId: number) => void;
 }) {
+  // States
   const [currentPost, setCurrentPost] = useState(post);
   const [showReactions, setShowReactions] = useState(false);
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
-  const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState<CommentModel[]>([]);
+  const [commentController, setCommentController] = useState("");
+  const [comments, setComments] = useState<CommentModel[]>([]);
 
   /**
    * Reacting the Post
@@ -113,7 +114,7 @@ function Post({
     // const formData = new FormData(e.currentTarget as HTMLFormElement);
     const data = {
       postId: currentPost.id,
-      commentContent: comment,
+      commentContent: commentController,
     };
     const res = await fetch("/api/posts/comment", {
       method: "POST",
@@ -129,26 +130,29 @@ function Post({
         await res.json();
       if (comment) {
         currentPost.comments.push(comment);
-        setCommentList([...commentList, comment]);
-        setComment("");
+        setComments([...comments, comment]);
+        setCommentController("");
       } else {
         alert(message);
       }
     }
   };
 
-  const showComments = async () => {
+  /**
+   * Show Comment Modal
+   */
+  const showCommentModal = async () => {
     const res = await fetch(`/api/posts/comment?postId=${post.id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
     if (res.ok) {
       const { comments, message } = await res.json();
-      setCommentList(comments);
+      setComments(comments);
     } else {
       alert("Connection failed.");
     }
-    console.log(commentList);
+    console.log(comments);
     // @ts-ignore
     document.getElementById(`comment_modal_${currentPost.id}`)!.showModal();
   };
@@ -294,7 +298,7 @@ function Post({
         </span>
         <span
           className="flex w-full justify-center"
-          onClick={() => showComments()}
+          onClick={() => showCommentModal()}
         >
           <span className="hover:text-primary cursor-pointer">
             <FaComment />
@@ -312,7 +316,7 @@ function Post({
           <h3 className="font-bold text-lg">Comment Section</h3>
           <div className="py-4">
             <span className="flex flex-col">
-              {commentList.map((_comment) => (
+              {comments.map((_comment) => (
                 <CommentComponent
                   key={"commentId" + _comment.id}
                   comment={_comment}
@@ -325,8 +329,8 @@ function Post({
                 className="input input-bordered w-full"
                 name="commentContent"
                 id="commentContent"
-                value={comment}
-                onChange={(e) => setComment(e.currentTarget.value)}
+                value={commentController}
+                onChange={(e) => setCommentController(e.currentTarget.value)}
               />
               <input
                 type="submit"

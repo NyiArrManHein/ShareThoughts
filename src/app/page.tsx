@@ -46,7 +46,7 @@ export default function Home() {
     });
     if (res.ok) {
       const { post, message } = await res.json();
-      const newPosts = [...posts, post].reverse();
+      const newPosts = [post, ...posts];
       setPosts(newPosts);
       setTitle("");
       setContent("");
