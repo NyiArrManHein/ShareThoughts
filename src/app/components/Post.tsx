@@ -14,6 +14,7 @@ import {
   FaThumbsUp,
 } from "react-icons/fa";
 import CommentComponent from "./CommentComponent";
+import ReactionsComponent from "./ReactionsComponent";
 
 function Post({
   post,
@@ -222,80 +223,12 @@ function Post({
         </span>
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
-        <span className="flex w-full justify-center">
-          <div
-            className={
-              showReactions ? " flex flex-row w-full justify-center" : "hidden"
-            }
-            onMouseLeave={() => setShowReactions(false)}
-          >
-            <span
-              className={
-                reaction === Reactions.LIKE
-                  ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded-full p-3"
-                  : "text-2xl pr-3 text-primary hover:text-3xl p-2"
-              }
-              onClick={() => reactPost(Reactions.LIKE)}
-              onTouchStart={() => reactPost(Reactions.LIKE)}
-            >
-              <FaThumbsUp />
-            </span>
-            <span
-              className={
-                reaction === Reactions.LOVE
-                  ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded-full p-3"
-                  : "text-2xl pr-3 text-error hover:text-3xl p-2"
-              }
-              onClick={() => reactPost(Reactions.LOVE)}
-              onTouchStart={() => reactPost(Reactions.LOVE)}
-            >
-              <FaHeart />
-            </span>
-            <span
-              className={
-                reaction === Reactions.HAHA
-                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
-                  : "text-2xl pr-3 text-warning hover:text-3xl p-2"
-              }
-              onClick={() => reactPost(Reactions.HAHA)}
-              onTouchStart={() => reactPost(Reactions.HAHA)}
-            >
-              <FaLaugh />
-            </span>
-            <span
-              className={
-                reaction === Reactions.SAD
-                  ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
-                  : "text-2xl pr-3 text-warning hover:text-3xl p-2"
-              }
-              onClick={() => reactPost(Reactions.SAD)}
-              onTouchStart={() => reactPost(Reactions.SAD)}
-            >
-              <FaSadCry />
-            </span>
-          </div>
-          <div className={showReactions ? "hidden" : ""}>
-            <span
-              tabIndex={0}
-              className="hover:text-primary cursor-pointer text-2xl"
-              onClick={() => setShowReactions(!showReactions)}
-            >
-              {reaction ? (
-                reaction === "HAHA" ? (
-                  <FaLaugh />
-                ) : reaction === "LIKE" ? (
-                  <FaThumbsUp />
-                ) : reaction === "LOVE" ? (
-                  <FaHeart />
-                ) : (
-                  <FaSadCry />
-                )
-              ) : (
-                <FaThumbsUp />
-              )}
-            </span>
-          </div>
-        </span>
+        <ReactionsComponent
+          showReactions={showReactions}
+          setShowReactions={setShowReactions}
+          reaction={reaction}
+          handler={reactPost}
+        />
         <span
           className="flex w-full justify-center"
           onClick={() => showCommentModal()}
