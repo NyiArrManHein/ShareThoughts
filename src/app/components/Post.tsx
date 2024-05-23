@@ -4,15 +4,7 @@ import { PostModel } from "@/lib/models";
 import { Like, Reactions } from "@prisma/client";
 import { CommentModel } from "@/lib/models";
 import React, { useState } from "react";
-import {
-  FaClock,
-  FaComment,
-  FaHeart,
-  FaLaugh,
-  FaSadCry,
-  FaShare,
-  FaThumbsUp,
-} from "react-icons/fa";
+import { FaClock, FaComment, FaShare } from "react-icons/fa";
 import CommentComponent from "./CommentComponent";
 import ReactionsComponent from "./ReactionsComponent";
 
