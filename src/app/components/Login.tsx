@@ -63,6 +63,11 @@ function Login({
         const { message } = await res.json();
         setFlashMessage({ message: message, category: "bg-error" });
       }
+    } else {
+      setFlashMessage({
+        message: "Please fill in all the fields.",
+        category: "bg-info",
+      });
     }
   };
 

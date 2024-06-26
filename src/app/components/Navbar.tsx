@@ -1,6 +1,8 @@
 import { User } from "@/lib/models";
 import React from "react";
 import { FaBell, FaMoon, FaSun } from "react-icons/fa";
+import Image from "next/image";
+import profilePic from "../img/profile.webp";
 
 function Navbar({
   theme,
@@ -22,7 +24,7 @@ function Navbar({
   return (
     <nav className="navbar bg-base-200 top-0 sticky z-50 w-full">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">ST</a>
+        <a className="btn btn-ghost text-xl">Share Thoughts For Everyone</a>
       </div>
       <div className="flex-none gap-2 pr-2">
         {/* Theme Changer */}
@@ -79,9 +81,15 @@ function Navbar({
                 className="btn btn-ghost btn-circle avatar"
               >
                 <div className="w-10 rounded-full">
-                  <img
+                  {/* <img
                     alt="Tailwind CSS Navbar component"
                     src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  /> */}
+                  <Image
+                    src={profilePic}
+                    alt="Profile Picture"
+                    width={50}
+                    height={50}
                   />
                 </div>
               </div>
@@ -105,7 +113,7 @@ function Navbar({
             </div>
           </>
         ) : (
-          <a href="/auth">Login</a>
+          <a href="/auth">SignUp</a>
         )}
       </div>
     </nav>

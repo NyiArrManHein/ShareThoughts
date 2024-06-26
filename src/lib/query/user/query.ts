@@ -124,21 +124,21 @@ export async function insertUser(
         //     buttonValue: "Verify",
         //   })
         // );
-        const sentEmailId = await sendMailWithNodemailer(
-          user.email,
-          "Todo: Verify your email",
-          EmailTemplate({
-            description: "to complete the verification",
-            lastName: user.lastName!,
-            token: user.verifyToken!,
-            host: host!,
-            path: "/users/verify/",
-            buttonValue: "Verify",
-          })
-        );
-        msg = sentEmailId
-          ? msg + ` And sent the verification link to ${user.email}.`
-          : msg + ` Failed to send the verification link to ${user.email}`;
+        // const sentEmailId = await sendMailWithNodemailer(
+        //   user.email,
+        //   "Todo: Verify your email",
+        //   EmailTemplate({
+        //     description: "to complete the verification",
+        //     lastName: user.lastName!,
+        //     token: user.verifyToken!,
+        //     host: host!,
+        //     path: "/users/verify/",
+        //     buttonValue: "Verify",
+        //   })
+        // );
+        // msg = sentEmailId
+        //   ? msg + ` And sent the verification link to ${user.email}.`
+        //   : msg + ` Failed to send the verification link to ${user.email}`;
         // return sentEmailId ? (user as User) : undefined;
       } else {
         msg = "Failed to register the user.";

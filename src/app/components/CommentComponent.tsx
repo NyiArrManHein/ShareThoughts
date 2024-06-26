@@ -6,13 +6,16 @@ import { $Enums, Reactions } from "@prisma/client";
 function CommentComponent({ comment }: { comment: CommentModel }) {
   const [showReactions, setShowReactions] = useState(false);
   const [reaction, setReaction] = useState<Reactions | undefined>();
+
+  // Ensure createdAt is a Date object
+  const CommentCreatedAt = new Date(comment.createdAt);
   return (
     <>
       <div className="flex flex-row pl-5">
         <div className=" flex flex-col">
           <span>
             <i>{comment?.user?.username}</i>
-            <small className="pl-5">Feb-15, 2024</small>
+            <small className="pl-5">{CommentCreatedAt.toLocaleString()}</small>
           </span>
           <span className=" pl-3">{comment.content}</span>
           <div className=" w-full flex flex-row">
@@ -21,20 +24,20 @@ function CommentComponent({ comment }: { comment: CommentModel }) {
                 showReactions={showReactions}
                 setShowReactions={setShowReactions}
                 reaction={reaction}
-                handler={function (reaction: $Enums.Reactions): Promise<void> {
-                  throw new Error("Function not implemented.");
-                }}
+                // handler={function (reaction: $Enums.Reactions): Promise<void> {
+                //   throw new Error("Function not implemented.");
+                // }}
               />
             </span>
             <span className="btn btn-ghost px-5">Reply</span>
           </div>
         </div>
         {/* ... Actions */}
-        <span className="w-full text-right">
+        <span className="text-right">
           <div className="dropdown dropdown-left sm:dropdown-right">
-            <div tabIndex={0} role="button" className="m-1">
+            {/* <div tabIndex={0} role="button" className="m-1">
               ...
-            </div>
+            </div> */}
             <ul
               tabIndex={0}
               className="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-52"

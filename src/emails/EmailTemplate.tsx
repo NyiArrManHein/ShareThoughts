@@ -1,6 +1,6 @@
 interface EmailTemplateProps {
   description: string;
-  lastName: string;
+  lastName: string | null;
   token: string;
   host: string;
   path: string;

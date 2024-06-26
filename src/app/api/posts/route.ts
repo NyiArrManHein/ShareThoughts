@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { createResponse, getSession } from "@/lib/session";
 import { isAuth } from "@/lib/utils";
 import {
+  UpdatePostById,
   deletePostById,
   getPostForNewsFeed,
   insertPostByUsername,
 } from "@/lib/query/post/query";
-import { Results } from "@/lib/models";
+import { PostModel, Results } from "@/lib/models";
 
 // Read Posts
 export async function GET(request: NextRequest) {
@@ -41,6 +42,70 @@ export async function POST(request: NextRequest) {
     }
   );
 }
+
+interface UpdatePostResponse {
+  isEdited: boolean;
+  updatedPost?: PostModel;
+  message: string;
+}
+
+export async function PATCH(request: NextRequest) {
+  let message: Results | string = Results.REQUIRED_LOGIN;
+  let updatedPost: PostModel | undefined = undefined;
+  let isEdited = false;
+  const response = new Response();
+  const { isLoggedIn, currentUser } = await isAuth(request, response);
+
+  if (isLoggedIn) {
+    const { postId, postTitle, postContent } = await request.json();
+    const {
+      isEdited: _isEdited,
+      updatedPost: _updatedPost,
+      message: _message,
+    }: UpdatePostResponse = await UpdatePostById(
+      postId,
+      currentUser?.id!,
+      postTitle,
+      postContent
+    );
+    isEdited = _isEdited;
+    updatedPost = _updatedPost;
+    message = _message;
+  }
+
+  return createResponse(
+    response,
+    JSON.stringify({ isEdited, updatedPost: updatedPost, message }),
+    { status: 200 }
+  );
+}
+
+// export async function PATCH(request: NextRequest) {
+//   let message: Results | string = Results.REQUIRED_LOGIN;
+//   // let updatedPost: PostModel | undefined = undefined;
+//   let isEdited = false;
+//   let updatedPost = undefined;
+//   const response = new Response();
+//   const { isLoggedIn, currentUser } = await isAuth(request, response);
+
+//   if (isLoggedIn) {
+//     const { postId, postTitle, postContent } = await request.json();
+//     updatedPost = await UpdatePostById(
+//       postId,
+//       currentUser?.id!,
+//       postTitle,
+//       postContent
+//     );
+//   }
+
+//   return createResponse(
+//     response,
+//     JSON.stringify({ updatedPost: updatedPost }),
+//     {
+//       status: 200,
+//     }
+//   );
+// }
 
 // Delete Post
 export async function DELETE(request: NextRequest) {

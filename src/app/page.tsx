@@ -20,12 +20,29 @@ export default function Home() {
   // Posts
   const [posts, setPosts] = useState<PostModel[]>([]);
 
+  // useEffect(() => {
+  //   fetch("/api/posts/", {
+  //     method: "GET",
+  //     headers: { "Content-Type": "application/json" },
+  //   }).then((res) =>
+  //     res.json().then(({ posts: fetchedPost }) => setPosts(fetchedPost))
+  //   );
+  // }, []);
+
   useEffect(() => {
     fetch("/api/posts/", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     }).then((res) =>
-      res.json().then(({ posts: fetchedPost }) => setPosts(fetchedPost))
+      res.json().then(({ posts: fetchedPost }) => {
+        // Convert date strings to Date objects
+        const postsWithDates = fetchedPost.map((post: PostModel) => ({
+          ...post,
+          createdAt: new Date(post.createdAt),
+          updatedAt: new Date(post.updatedAt),
+        }));
+        setPosts(postsWithDates);
+      })
     );
   }, []);
 
@@ -46,21 +63,57 @@ export default function Home() {
     });
     if (res.ok) {
       const { post, message } = await res.json();
+      post.createdAt = new Date(post.createdAt); // Convert createdAt to Date object
       const newPosts = [post, ...posts];
       setPosts(newPosts);
       setTitle("");
       setContent("");
     }
   };
+
+  const hideAddPost = () => {
+    setIsAddPost(!isAddPost);
+  };
+
   const deletePostFromTheList = (postId: number) => {
     const newPosts = posts.filter((post) => post.id !== postId);
     setPosts(newPosts);
   };
+
+  // const updatePostFromTheList = (
+  //   postId: number,
+  //   postTitle: string,
+  //   postContent: string
+  // ) => {
+  //   setPosts((prevPosts) =>
+  //     prevPosts.map((post) =>
+  //       post.id == postId
+  //         ? { ...post, title: postTitle, content: postContent }
+  //         : post
+  //     )
+  //   );
+
+  // };
+  const updatePostFromTheList = (
+    postId: number,
+    postTitle: string,
+    postContent: string
+  ) => {
+    setPosts((prevPosts) => {
+      const updatedPosts = prevPosts.map((post) =>
+        post.id === postId
+          ? { ...post, title: postTitle, content: postContent }
+          : post
+      );
+      return updatedPosts;
+    });
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="flex flex-row w-full p-5">
         {/* Left Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex">Page Links</div>
+        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
 
         {/* Posts */}
         <div className="w-full px-3">
@@ -80,6 +133,7 @@ export default function Home() {
           <AddPost
             submitPost={submitPost}
             isAddPost={isAddPost}
+            hideAddPost={hideAddPost}
             title={title}
             setTitle={setTitle}
             content={content}
@@ -92,13 +146,14 @@ export default function Home() {
                 post={post}
                 userId={data.user?.id}
                 deletePostFromTheList={deletePostFromTheList}
+                updatePostFromTheList={updatePostFromTheList}
               />
             ))}
           </div>
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex">Sidebar</div>
+        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
       </div>
     </main>
   );

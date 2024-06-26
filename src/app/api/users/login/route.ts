@@ -34,6 +34,8 @@ export async function POST(request: NextRequest) {
       if (sessionId) {
         session.user = {
           id: user.id,
+          email: user.email,
+          lastName: user.lastName,
           username: user.username,
           accountType: user.accountType,
           role: user.role,
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
         msg = message;
       }
     } else {
-      msg = "Incorrect email or password. Please try again.";
+      msg = "Incorrect username or password. Please try again.";
     }
     return createResponse(
       response,

@@ -7,6 +7,8 @@ export type FlashMessage = {
 
 export type User = {
   id: number;
+  email: string;
+  lastName: string | null;
   accountType: AccountType;
   role: Role;
   username: string;
@@ -34,12 +36,13 @@ export type PostModel = {
 export type CommentModel = {
   id: number;
   user: User;
+  createdAt: Date;
   content: string;
   userId: number;
   postId: number;
 };
 
-/**
+/**~
  * Results
  */
 export enum Results {

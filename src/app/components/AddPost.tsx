@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction } from "react";
 function AddPost({
   submitPost,
   isAddPost,
+  hideAddPost,
   title,
   setTitle,
   content,
@@ -10,6 +11,7 @@ function AddPost({
 }: {
   submitPost: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   isAddPost: boolean;
+  hideAddPost: () => void;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   content: string;
@@ -24,6 +26,12 @@ function AddPost({
             : "hidden"
         }
       >
+        <div className="flex justify-end">
+          <button className="w-4" type="button" onClick={hideAddPost}>
+            X
+          </button>
+        </div>
+
         <input
           type="text"
           className="input input-ghost focus:outline-none focus:border-none w-full"
@@ -42,11 +50,19 @@ function AddPost({
           onChange={(e) => setContent(e.currentTarget.value)}
         ></textarea>
         <div>
-          <input
+          {/* Fixed here */}
+          {/* <input
             type="submit"
             className="btn btn-primary w-fit float-right mt-1"
             value="Post"
-          />
+          /> */}
+          {title && content && (
+            <input
+              type="submit"
+              className="btn btn-primary w-fit float-right mt-1"
+              value="Post"
+            />
+          )}
         </div>
       </div>
     </form>
