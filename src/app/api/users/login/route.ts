@@ -29,25 +29,31 @@ export async function POST(request: NextRequest) {
       : await getUserByUsername(username_or_email);
 
     // const user = await getUserByEmail(username_or_email);
-    if (user && hashPassword.decrypt(user.password) === password) {
-      const { sessionId, message } = await insertSessionIdByEmail(user.email);
-      if (sessionId) {
-        session.user = {
-          id: user.id,
-          email: user.email,
-          lastName: user.lastName,
-          username: user.username,
-          accountType: user.accountType,
-          role: user.role,
-          bio: user.bio!,
-          verified: user.verified,
-          sessionId: sessionId,
-        };
-        await session.save();
-        currentUser = session.user;
-        msg = message;
-      } else {
-        msg = message;
+    if (user) {
+      if (!user.verified) {
+        msg =
+          "Your email is not verified. Please verify your email before logging in.";
+      } else if (hashPassword.decrypt(user.password) === password) {
+        const { sessionId, message } = await insertSessionIdByEmail(user.email);
+        if (sessionId) {
+          session.user = {
+            id: user.id,
+            email: user.email,
+            lastName: user.lastName,
+            username: user.username,
+            accountType: user.accountType,
+            role: user.role,
+            bio: user.bio!,
+            verified: user.verified,
+            verifyToken: user.verifyToken,
+            sessionId: sessionId,
+          };
+          await session.save();
+          currentUser = session.user;
+          msg = message;
+        } else {
+          msg = message;
+        }
       }
     } else {
       msg = "Incorrect username or password. Please try again.";

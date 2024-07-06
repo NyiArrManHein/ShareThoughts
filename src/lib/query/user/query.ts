@@ -5,6 +5,7 @@ import {
   HashPassword,
   generateToken,
   getExpireDate,
+  sendMail,
   sendMailWithNodemailer,
 } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export async function insertResetPasswordTokenByEmail(email?: string) {
       },
       data: {
         resetPasswordToken: generateToken(),
-        resetPasswordTokenExpire: getExpireDate(),
+        resetPasswordTokenExpire: getExpireDate(1440),
       },
     });
     if (user && user.resetPasswordToken) {
@@ -113,6 +114,24 @@ export async function insertUser(
       if (user) {
         registeredUser = user as User;
         msg = `Registered successfully as ${registeredUser.username}.`;
+        // Send verification email
+        const template = EmailTemplate({
+          description: "to complete verification",
+          lastName: registeredUser.lastName,
+          token: registeredUser.verifyToken,
+          host: host!,
+          path: "/verify/",
+          // path: "/users/verify?token=",
+          buttonValue: "Verify",
+        });
+        try {
+          await sendMail(registeredUser.email, "Verify your email", template);
+          msg += " Verification email sent.";
+        } catch (error) {
+          msg += " Failed to send verification email.";
+          console.error("Error sending email:", error);
+        }
+
         // const sentEmailId = await sendMail(
         //   user.email,
         //   "Todo: Verify your email",

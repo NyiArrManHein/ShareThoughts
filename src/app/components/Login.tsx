@@ -6,6 +6,7 @@ import FlashMsg from "./FlashMsg";
 import { FlashMessage } from "@/lib/models";
 import { useRouter } from "next/navigation";
 import useUser from "@/lib/useUser";
+import Link from "next/link";
 
 function Login({
   setIsRegister,
@@ -97,7 +98,7 @@ function Login({
             errorMessage={passwordError}
             value={password}
           />
-          <a href="#">Forgot password?</a>
+          <Link href="/forgot-password">Forgot password?</Link>
           <div className="grid grid-cols-1">
             <input type="submit" value="Login" className="btn btn-info mr-2" />
           </div>

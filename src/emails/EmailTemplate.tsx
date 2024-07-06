@@ -1,7 +1,7 @@
 interface EmailTemplateProps {
   description: string;
   lastName: string | null;
-  token: string;
+  token: string | null;
   host: string;
   path: string;
   buttonValue: string;

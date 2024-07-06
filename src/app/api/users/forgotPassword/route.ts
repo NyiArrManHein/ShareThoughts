@@ -7,14 +7,16 @@ import {
   getUserByEmail,
   insertResetPasswordTokenByEmail,
 } from "@/lib/query/user/query";
-import { isAuth, sendMailWithNodemailer } from "@/lib/utils";
+import { isAuth, sendMail, sendMailWithNodemailer } from "@/lib/utils";
 
 // {email: string, message: Results}
 // { email: string }
 export async function POST(request: NextRequest) {
   // Declare Var
+  // let message: string = Messages.REQUIRED_LOGOUT;
+
   let message: string = Messages.REQUIRED_LOGOUT;
-  let isSuccess = false;
+  // let isSuccess = false;
 
   // Create response
   const response = new Response();
@@ -37,27 +39,42 @@ export async function POST(request: NextRequest) {
         // If token generated
         if (token) {
           // Try to send the token as a form of react element with a Button
+          // try {
+          //   const sentEmailId = await sendMailWithNodemailer(
+          //     user.email,
+          //     "Todo: Reset password",
+          //     EmailTemplate({
+          //       description: "to reset the password",
+          //       lastName: user.lastName!,
+          //       token: token,
+          //       host: request.headers.get("host")!,
+          //       path: "/users/auth/forgotPassword/verify/",
+          //       buttonValue: "Reset Password",
+          //     })
+          //   );
+
+          //   if (sentEmailId) {
+          //     isSuccess = true;
+          //     message =
+          //       "We have sent an email to " + user.email + " successfully.";
+          //   }
+          // } catch (error) {
+          //   message = Results.SERVER_ERROR;
+          // }
+          const template = EmailTemplate({
+            description: "to reset the password",
+            lastName: user.lastName,
+            token: token,
+            host: request.headers.get("host")!,
+            path: "/passwordVerify/",
+            buttonValue: "Reset Password",
+          });
           try {
-            const sentEmailId = await sendMailWithNodemailer(
-              user.email,
-              "Todo: Reset password",
-              EmailTemplate({
-                description: "to reset the password",
-                lastName: user.lastName!,
-                token: token,
-                host: request.headers.get("host")!,
-                path: "/users/auth/forgotPassword/verify/",
-                buttonValue: "Reset Password",
-              })
-            );
-            // If the mail is successfully sent
-            if (sentEmailId) {
-              isSuccess = true;
-              message =
-                "We have sent an email to " + user.email + " successfully.";
-            }
+            await sendMail(user.email, "Verify your email", template);
+            message = " Verification email sent.";
           } catch (error) {
-            message = Results.SERVER_ERROR;
+            message = " Failed to send verification email.";
+            console.error("Error sending email:", error);
           }
         }
       } else {
@@ -67,7 +84,6 @@ export async function POST(request: NextRequest) {
         response,
         JSON.stringify({
           data: { email: user?.email },
-          isSuccess: isSuccess,
           message: message,
         }),
         { status: 200 }
@@ -78,13 +94,9 @@ export async function POST(request: NextRequest) {
     }
   } catch (error: any) {
     message = error.message;
-    return createResponse(
-      response,
-      JSON.stringify({ isSuccess: isSuccess, message: message }),
-      {
-        status: 403,
-      }
-    );
+    return createResponse(response, JSON.stringify({ message: message }), {
+      status: 403,
+    });
   }
 
   // If the user is loggedout

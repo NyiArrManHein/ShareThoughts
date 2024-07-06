@@ -7,7 +7,7 @@ import {
   getUserByEmail,
   insertVerifyTokenByEmail,
 } from "@/lib/query/user/query";
-import { isAuth, sendMailWithNodemailer } from "@/lib/utils";
+import { isAuth, sendMailWithNodemailer, sendMail } from "@/lib/utils";
 
 // {email: string, message: Results}
 // { email: string }
@@ -27,18 +27,7 @@ export async function POST(request: NextRequest) {
     const { token } = await insertVerifyTokenByEmail(currentUser.email);
     if (token) {
       try {
-        // const sentEmailId = await sendMail(
-        //   user.email,
-        //   "Todo: Verify your email",
-        //   EmailTemplate({
-        //     description: "to complete verification",
-        //     username: user.username,
-        //     token: token,
-        //     path: "/users/verify/",
-        //     buttonValue: "Verify",
-        //   })
-        // );
-        const sentEmailId = await sendMailWithNodemailer(
+        const sentEmailId = await sendMail(
           currentUser.email,
           "Todo: Verify your email",
           EmailTemplate({
@@ -46,10 +35,22 @@ export async function POST(request: NextRequest) {
             lastName: currentUser.lastName,
             token: token,
             host: request.headers.get("host")!,
-            path: "/users/verify/",
+            path: "/verify/",
             buttonValue: "Verify",
           })
         );
+        // const sentEmailId = await sendMailWithNodemailer(
+        //   currentUser.email,
+        //   "Todo: Verify your email",
+        //   EmailTemplate({
+        //     description: "to complete verification",
+        //     lastName: currentUser.lastName,
+        //     token: token,
+        //     host: request.headers.get("host")!,
+        //     path: "/users/verify/",
+        //     buttonValue: "Verify",
+        //   })
+        // );
         if (sentEmailId) {
           isSuccess = true;
           message =

@@ -15,6 +15,7 @@ export type User = {
   bio: string;
   sessionId: string;
   verified: boolean;
+  verifyToken: string | null;
 };
 
 export type PostModel = {
