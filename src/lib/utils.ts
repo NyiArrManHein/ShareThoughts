@@ -55,16 +55,47 @@ export async function sendMail(
   subject: string,
   template: JSX.Element
 ): Promise<string> {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const data = await resend.emails.send({
-    from: "onboarding@resend.dev",
-    to: [email],
-    // to: "delivered@resend.dev",
-    subject: subject,
-    react: template,
-  });
-  return data.data?.id!;
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const data = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: [email],
+      // to: "delivered@resend.dev",
+      subject: subject,
+      react: template,
+    });
+    return data.data?.id!;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
 }
+
+// export async function sendMailWithNodemailer(
+//   email: string,
+//   subject: string,
+//   template: JSX.Element
+// ): Promise<string> {
+//   const ReactDOMServer = (await import("react-dom/server")).default;
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       type: "OAuth2",
+//       user: process.env.MAIL_USERNAME,
+//       // pass: process.env.MAIL_PASSWORD,
+//       clientId: process.env.OAUTH_CLIENTID,
+//       clientSecret: process.env.OAUTH_CLIENT_SECRET,
+//       refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+//     },
+//   });
+//   const info = await transporter.sendMail({
+//     from: "todo@dimensions.com",
+//     to: email,
+//     subject: subject,
+//     html: ReactDOMServer.renderToString(template),
+//   });
+//   return info.messageId;
+// }
 
 export async function sendMailWithNodemailer(
   email: string,
@@ -74,17 +105,14 @@ export async function sendMailWithNodemailer(
   const ReactDOMServer = (await import("react-dom/server")).default;
   const transporter = nodemailer.createTransport({
     service: "gmail",
+    host: "smtp.gmail.com",
     auth: {
-      type: "OAuth2",
-      user: process.env.MAIL_USERNAME,
-      // pass: process.env.MAIL_PASSWORD,
-      clientId: process.env.OAUTH_CLIENTID,
-      clientSecret: process.env.OAUTH_CLIENT_SECRET,
-      refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+      user: process.env.USER,
+      pass: process.env.APP_PASSWORD,
     },
   });
   const info = await transporter.sendMail({
-    from: "todo@dimensions.com",
+    from: process.env.USER,
     to: email,
     subject: subject,
     html: ReactDOMServer.renderToString(template),

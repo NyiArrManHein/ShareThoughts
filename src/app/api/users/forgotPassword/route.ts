@@ -69,8 +69,19 @@ export async function POST(request: NextRequest) {
             path: "/passwordVerify/",
             buttonValue: "Reset Password",
           });
+          // try {
+          //   await sendMail(user.email, "Verify your email", template);
+          //   message = " Verification email sent.";
+          // } catch (error) {
+          //   message = " Failed to send verification email.";
+          //   console.error("Error sending email:", error);
+          // }
           try {
-            await sendMail(user.email, "Verify your email", template);
+            await sendMailWithNodemailer(
+              user.email,
+              "Verify your email",
+              template
+            );
             message = " Verification email sent.";
           } catch (error) {
             message = " Failed to send verification email.";

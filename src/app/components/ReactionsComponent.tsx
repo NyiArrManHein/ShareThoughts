@@ -6,12 +6,12 @@ function ReactionsComponent({
   showReactions,
   setShowReactions,
   reaction,
-}: // handler,
-{
+  handler,
+}: {
   showReactions: boolean;
   setShowReactions: React.Dispatch<React.SetStateAction<boolean>>;
   reaction: Reactions | undefined;
-  // handler: (reaction: Reactions) => Promise<void>;
+  handler: (reaction: Reactions) => Promise<void>;
 }) {
   return (
     <span className="flex w-full justify-center">
@@ -28,8 +28,8 @@ function ReactionsComponent({
                 ? "text-2xl pr-3 text-primary hover:text-3xl bg-base-200 rounded-full p-3"
                 : "text-2xl pr-3 text-primary hover:text-3xl"
             }
-            // onClick={() => handler(Reactions.LIKE)}
-            // onTouchStart={() => handler(Reactions.LIKE)}
+            onClick={() => handler(Reactions.LIKE)}
+            onTouchStart={() => handler(Reactions.LIKE)}
           >
             <FaThumbsUp />
           </span>
@@ -39,8 +39,8 @@ function ReactionsComponent({
                 ? "text-2xl pr-3 text-error hover:text-3xl bg-base-200 rounded-full p-3"
                 : "text-2xl pr-3 text-error hover:text-3xl"
             }
-            // onClick={() => handler(Reactions.LOVE)}
-            // onTouchStart={() => handler(Reactions.LOVE)}
+            onClick={() => handler(Reactions.LOVE)}
+            onTouchStart={() => handler(Reactions.LOVE)}
           >
             <FaHeart />
           </span>
@@ -50,8 +50,8 @@ function ReactionsComponent({
                 ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
                 : "text-2xl pr-3 text-warning hover:text-3xl"
             }
-            // onClick={() => handler(Reactions.HAHA)}
-            // onTouchStart={() => handler(Reactions.HAHA)}
+            onClick={() => handler(Reactions.HAHA)}
+            onTouchStart={() => handler(Reactions.HAHA)}
           >
             <FaLaugh />
           </span>
@@ -61,8 +61,8 @@ function ReactionsComponent({
                 ? "text-2xl pr-3 text-warning hover:text-3xl bg-base-200 rounded-full p-3"
                 : "text-2xl pr-3 text-warning hover:text-3xl"
             }
-            // onClick={() => handler(Reactions.SAD)}
-            // onTouchStart={() => handler(Reactions.SAD)}
+            onClick={() => handler(Reactions.SAD)}
+            onTouchStart={() => handler(Reactions.SAD)}
           >
             <FaSadCry />
           </span>

@@ -330,7 +330,7 @@ function Post({
           showReactions={showReactions}
           setShowReactions={setShowReactions}
           reaction={reaction}
-          // handler={reactPost}
+          handler={reactPost}
         />
         <span
           className="flex w-full justify-center"

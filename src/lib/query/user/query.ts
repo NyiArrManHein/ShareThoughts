@@ -124,8 +124,20 @@ export async function insertUser(
           // path: "/users/verify?token=",
           buttonValue: "Verify",
         });
+        // try {
+        //   await sendMail(registeredUser.email, "Verify your email", template);
+        //   msg += " Verification email sent.";
+        // } catch (error) {
+        //   msg += " Failed to send verification email.";
+        //   console.error("Error sending email:", error);
+        // }
+
         try {
-          await sendMail(registeredUser.email, "Verify your email", template);
+          await sendMailWithNodemailer(
+            registeredUser.email,
+            "Verify your email",
+            template
+          );
           msg += " Verification email sent.";
         } catch (error) {
           msg += " Failed to send verification email.";
