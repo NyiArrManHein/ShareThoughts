@@ -5,7 +5,7 @@ import { FlashMessage } from "@/lib/models";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ({ params }: { params: { token: string } }) {
+const PasswordVerifyPage = ({ params }: { params: { token: string } }) => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(undefined);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -82,4 +82,5 @@ export default function ({ params }: { params: { token: string } }) {
       </div>
     </main>
   );
-}
+};
+export default PasswordVerifyPage;
