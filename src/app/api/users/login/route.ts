@@ -13,7 +13,7 @@ import { HashPassword, isEmail } from "@/lib/utils";
 // Request { email, password }
 export async function POST(request: NextRequest) {
   const hashPassword = new HashPassword();
-  let msg: string = Results.REQUIRED_LOGOUT;
+  let msg: string = "Incorrect username or password. Please try again.";
   // Create response
   const response = new Response();
   // Create session
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           currentUser = session.user;
           msg = message;
         } else {
-          msg = message;
+          msg = Results.REQUIRED_LOGOUT;
         }
       }
     } else {

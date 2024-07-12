@@ -24,9 +24,9 @@ function CommentComponent({ comment }: { comment: CommentModel }) {
                 showReactions={showReactions}
                 setShowReactions={setShowReactions}
                 reaction={reaction}
-                // handler={function (reaction: $Enums.Reactions): Promise<void> {
-                //   throw new Error("Function not implemented.");
-                // }}
+                handler={function (reaction: $Enums.Reactions): Promise<void> {
+                  throw new Error("Function not implemented.");
+                }}
               />
             </span>
             <span className="btn btn-ghost px-5">Reply</span>

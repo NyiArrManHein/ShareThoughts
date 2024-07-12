@@ -405,14 +405,16 @@ function Post({
               className="input input-ghost focus:outline-none focus:border-none w-full"
               name="content"
               id="content"
-              placeholder={editContent}
+              value={editContent}
               onChange={(e) => setEditContent(e.currentTarget.value)}
             ></textarea>
-            <input
-              className="btn btn-primary w-fit float-right mt-1"
-              type="submit"
-              value="Edit"
-            ></input>
+            {editTitle && editContent && (
+              <input
+                className="btn btn-primary w-fit float-right mt-1"
+                type="submit"
+                value="Edit"
+              ></input>
+            )}
           </form>
         </div>
         <form method="dialog" className="modal-backdrop">
