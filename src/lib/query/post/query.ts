@@ -119,6 +119,91 @@ export async function deletePostById(postId: number, userId: number) {
   return { isDeleted, message };
 }
 
+export async function checkReport(postId: number, userId: number) {
+  const report = await prisma.report.findFirst({
+    where: {
+      postId,
+      reportedById: userId,
+    },
+  });
+
+  return report !== null;
+}
+
+export async function reportPost(postId: number, reportedById: number) {
+  try {
+    // Check if the report already exists
+    const existingReport = await prisma.report.findUnique({
+      where: {
+        postId_reportedById: {
+          postId,
+          reportedById,
+        },
+      },
+    });
+
+    if (existingReport) {
+      return existingReport;
+    }
+
+    // Create a new report
+    const report = await prisma.report.create({
+      data: {
+        postId,
+        reportedById,
+      },
+    });
+
+    return report;
+  } catch (error) {
+    console.error("Error reporting post:", error);
+    return null;
+  }
+}
+
+export async function getAllReports() {
+  try {
+    const reports = await prisma.report.findMany({
+      // include: {
+      //   post: true,
+      //   reportedBy: true,
+      // },
+      include: {
+        post: {
+          include: {
+            author: true, // Include the author relation
+          },
+        },
+        reportedBy: true,
+      },
+      orderBy: {
+        createdAt: "desc", // Sort by createdAt in descending order
+      },
+    });
+    console.log("Fetched Reports:", reports); // Log the fetched reports to inspect the structure
+    return reports;
+  } catch (error) {
+    console.error("Error fetching reports:", error);
+    throw new Error("Failed to fetch reports");
+  }
+}
+
+export async function deletePostByReportId(reportId: number) {
+  const report = await prisma.report.findUnique({
+    where: { id: reportId },
+  });
+
+  if (!report) {
+    throw new Error("Report not found");
+  }
+
+  const { postId } = report;
+
+  await prisma.post.delete({
+    where: { id: postId },
+  });
+}
+
 export async function getComment(postId: number) {
   let message: string = "Failed to fetch comments";
   const comments = await prisma.comment.findMany({

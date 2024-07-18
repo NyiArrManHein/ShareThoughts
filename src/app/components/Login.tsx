@@ -55,7 +55,14 @@ function Login({
         if (user) {
           // Logged in successfully
           await mutateUser({ ...data, user: user });
-          push("/");
+          // push("/");
+          if (user.role === "ADMIN") {
+            // Redirect to admin page if user is admin
+            push("/admin");
+          } else {
+            // Redirect to homepage if user is not admin
+            push("/");
+          }
         } else {
           // const { message } = await res.json();
           setFlashMessage({ message: message, category: "bg-error" });

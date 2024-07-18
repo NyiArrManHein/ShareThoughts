@@ -43,6 +43,16 @@ export type CommentModel = {
   postId: number;
 };
 
+export type ReportModel = {
+  id: number;
+  post: PostModel;
+  postId: number;
+  reportedBy: User;
+  reportedById: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 /**~
  * Results
  */

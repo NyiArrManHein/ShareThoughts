@@ -29,6 +29,7 @@ function Post({
   const [currentPost, setCurrentPost] = useState(post);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editContent, setEditContent] = useState(post.content);
+  const [isReported, setIsReported] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
@@ -48,6 +49,19 @@ function Post({
   useEffect(() => {
     setCurrentPost(post);
   }, [post]);
+
+  useEffect(() => {
+    const checkIfReported = async () => {
+      const res = await fetch(`/api/posts/report?postId=${currentPost.id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      setIsReported(data.isReported);
+    };
+
+    checkIfReported();
+  }, [currentPost.id]);
 
   /**
    * Reacting the Post
@@ -160,6 +174,36 @@ function Post({
       if (isDeleted) {
         // Delete Post
         deletePostFromTheList(currentPost.id);
+      } else {
+        alert(message);
+      }
+    }
+  };
+
+  // Report Post
+  const reportPost = async () => {
+    // Added code
+    const isConfirmed = window.confirm(
+      "Are you sure you want to report this post?"
+    );
+
+    if (!isConfirmed) {
+      return; // If the user cancels, exit the function
+    }
+    // End added code
+    const data = {
+      postId: currentPost.id,
+    };
+    const res = await fetch("/api/posts/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const { isReported, message } = await res.json();
+      if (isReported) {
+        setIsReported(true);
+        alert(message);
       } else {
         alert(message);
       }
@@ -302,8 +346,40 @@ function Post({
                 <a onClick={() => deletePost()}>Delete</a>
               </li>
               {/* <li>
-                <a>Report</a>
+                <a onClick={() => reportPost()}>Report</a>
               </li> */}
+              {/* <li>
+                <a
+                  onClick={() => {
+                    if (!isReported) {
+                      reportPost();
+                    }
+                  }}
+                  className={
+                    isReported ? "text-gray-500 cursor-not-allowed" : ""
+                  }
+                  style={isReported ? { pointerEvents: "none" } : {}}
+                >
+                  {isReported ? "Reported" : "Report"}
+                </a>
+              </li> */}
+              <li>
+                {currentPost.author.id !== userId && (
+                  <a
+                    onClick={() => {
+                      if (!isReported) {
+                        reportPost();
+                      }
+                    }}
+                    className={
+                      isReported ? "text-gray-500 cursor-not-allowed" : ""
+                    }
+                    style={isReported ? { pointerEvents: "none" } : {}}
+                  >
+                    {isReported ? "Reported" : "Report"}
+                  </a>
+                )}
+              </li>
             </ul>
           </div>
         </span>

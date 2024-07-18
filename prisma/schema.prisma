@@ -38,6 +38,7 @@ model User {
   following     Follower[]     @relation("following")
   Notifications Notification[]
   Reply         Reply[]
+  reports       Report[]
 }
 
 model Post {
@@ -53,6 +54,7 @@ model Post {
   likes     Like[]
   comments  Comment[]
   shares    Share[]
+  reports   Report[]
 }
 
 model Like {
@@ -65,14 +67,14 @@ model Like {
 }
 
 model Comment {
-  id      Int     @id @default(autoincrement())
-  content String
+  id        Int       @id @default(autoincrement())
+  content   String
   createdAt DateTime? @default(now())
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  Int
-  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  Int
-  Reply   Reply[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  Reply     Reply[]
 }
 
 model Reply {
@@ -90,6 +92,20 @@ model Share {
   userId Int
   post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId Int
+}
+
+model Report {
+  id           Int      @id @default(autoincrement())
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       Int
+  reportedBy   User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
+  reportedById Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([postId, reportedById])
+  @@index([postId])
+  @@index([reportedById])
 }
 
 model Follower {
