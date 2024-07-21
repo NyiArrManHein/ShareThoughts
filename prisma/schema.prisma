@@ -39,6 +39,7 @@ model User {
   Notifications Notification[]
   Reply         Reply[]
   reports       Report[]
+  commentLikes  CommentLike[] 
 }
 
 model Post {
@@ -55,6 +56,7 @@ model Post {
   comments  Comment[]
   shares    Share[]
   reports   Report[]
+  commentLikes CommentLike[]
 }
 
 model Like {
@@ -75,6 +77,18 @@ model Comment {
   post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
   Reply     Reply[]
+  commentLikes CommentLike[]
+}
+
+model CommentLike{
+  id Int @id @default(autoincrement())
+  reaction Reactions @default(LIKE)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  post     Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   Int
+  comment  Comment   @relation(fields:[commentId],references:[id],onDelete:Cascade)
+  commentId Int
 }
 
 model Reply {
@@ -114,6 +128,8 @@ model Follower {
   followerId Int
   author     User @relation("following", fields: [authorId], references: [id])
   follower   User @relation("follower", fields: [followerId], references: [id])
+
+  @@unique([authorId, followerId])
 }
 
 model Notification {

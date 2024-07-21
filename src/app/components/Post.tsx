@@ -1,7 +1,7 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import { Like, Reactions } from "@prisma/client";
+import { CommentLike, Like, Reactions } from "@prisma/client";
 import { CommentModel } from "@/lib/models";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FaClock, FaComment, FaShare } from "react-icons/fa";
@@ -9,6 +9,7 @@ import CommentComponent from "./CommentComponent";
 import ReactionsComponent from "./ReactionsComponent";
 import Image from "next/image";
 import profilePic from "../img/profile.webp";
+import { useRouter } from "next/navigation";
 
 function Post({
   post,
@@ -45,6 +46,7 @@ function Post({
     second: "numeric",
     timeZoneName: "short",
   };
+  const router = useRouter();
 
   useEffect(() => {
     setCurrentPost(post);
@@ -67,9 +69,14 @@ function Post({
    * Reacting the Post
    * @param reaction
    */
+
+  const handleClick = () => {
+    // Navigate to the desired page
+    router.push(`/profileView/${post.authorId}`);
+  };
+
   const reactPost = async (reaction: Reactions) => {
     if (userId) {
-      // Send to the server
       const data = {
         postId: post.id,
         reactionType: reaction,
@@ -103,6 +110,55 @@ function Post({
           }
           setCurrentPost(post);
           // alert(message);
+        } else {
+          alert(message);
+        }
+      }
+    }
+    setShowReactions(!showReactions);
+  };
+
+  const reactComment = async (
+    reaction: Reactions,
+    id: number,
+    comment: CommentModel
+  ) => {
+    if (userId) {
+      // Send to the server
+      const data = {
+        postId: post.id,
+        commentId: id,
+        reactionType: reaction,
+      };
+      const res = await fetch("/api/posts/comment/react/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const {
+          react,
+          message,
+        }: { react: CommentLike | undefined; message: string } =
+          await res.json();
+        if (react) {
+          const isThereReaction = comment.commentReactions.filter(
+            (like) => like.userId === react.userId && like.reaction === reaction
+          )[0];
+          const reactedPost = comment.commentReactions.filter(
+            (like) => like.userId !== react.userId
+          );
+          comment.commentReactions = reactedPost;
+          if (isThereReaction === undefined) {
+            comment.commentReactions.push(react);
+
+            setReaction(reaction);
+          } else {
+            setReaction(undefined);
+          }
+          setCurrentPost(post);
         } else {
           alert(message);
         }
@@ -304,7 +360,11 @@ function Post({
         {/* Left head */}
         <span className="w-full">
           <div className="flex flex-row">
-            <div role="button" className="btn btn-ghost btn-circle avatar">
+            <div
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+              onClick={handleClick}
+            >
               <div className="w-10 rounded-full">
                 {/* <img
                   alt="Tailwind CSS Navbar component"

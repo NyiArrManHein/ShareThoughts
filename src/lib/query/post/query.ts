@@ -17,6 +17,103 @@ export async function getPostForNewsFeed() {
   return posts;
 }
 
+export async function getFollowerCount(userId: number) {
+  return prisma.follower.count({
+    where: { authorId: userId },
+  });
+}
+
+export async function getFollowingCount(userId: number) {
+  return prisma.follower.count({
+    where: { followerId: userId },
+  });
+}
+
+export async function getUserPosts(userId: number) {
+  const userPosts = await prisma.post.findMany({
+    where: { authorId: userId },
+    include: {
+      likes: true,
+      comments: true,
+      shares: true,
+      author: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  const followerCount = await getFollowerCount(userId);
+  const followingCount = await getFollowingCount(userId);
+  return { userPosts, followerCount, followingCount };
+}
+
+export async function getFollowStatus(
+  authorId: number,
+  userId: number
+): Promise<boolean> {
+  const followRecord = await prisma.follower.findFirst({
+    where: {
+      authorId: authorId,
+      followerId: userId,
+    },
+  });
+
+  return followRecord !== null;
+}
+
+export async function toggleFollow(authorId: number, followerId: number) {
+  try {
+    // Check if the follow relationship already exists
+    const followRecord = await prisma.follower.findFirst({
+      where: {
+        authorId: authorId,
+        followerId: followerId,
+      },
+    });
+
+    console.log("Follow record:", followRecord);
+
+    if (followRecord) {
+      // If exists, unfollow (delete the record)
+      await prisma.follower.delete({
+        where: {
+          id: followRecord.id,
+        },
+      });
+      console.log("Unfollowed successfully");
+    } else {
+      // If not exists, follow (create the record)
+      await prisma.follower.create({
+        data: {
+          authorId: authorId,
+          followerId: followerId,
+        },
+      });
+      console.log("Followed successfully");
+    }
+    return true;
+  } catch (error) {
+    console.error("Failed to toggle follow status", error);
+    return false;
+  }
+}
+
+export async function getFollowers(userId: number) {
+  const followers = await prisma.follower.findMany({
+    where: { authorId: userId },
+    include: { follower: true },
+  });
+  return followers.map((f) => f.follower.username);
+}
+
+export async function getFollowing(userId: number) {
+  const following = await prisma.follower.findMany({
+    where: { followerId: userId },
+    include: { author: true },
+  });
+  return following.map((f) => f.author.username);
+}
+
 export async function insertPostByUsername(
   authorId: number,
   postType: PostType,

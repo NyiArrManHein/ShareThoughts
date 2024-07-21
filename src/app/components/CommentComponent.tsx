@@ -1,7 +1,7 @@
 import { CommentModel } from "@/lib/models";
 import React, { useState } from "react";
 import ReactionsComponent from "./ReactionsComponent";
-import { $Enums, Reactions } from "@prisma/client";
+import { $Enums, CommentLike, Reactions } from "@prisma/client";
 
 function CommentComponent({ comment }: { comment: CommentModel }) {
   const [showReactions, setShowReactions] = useState(false);

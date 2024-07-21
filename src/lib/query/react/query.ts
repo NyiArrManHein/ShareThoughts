@@ -41,3 +41,47 @@ export async function insertIntoReact(
   }
   return { react, message };
 }
+
+export async function insertIntoCommentReact(
+  userId: number,
+  postId: number,
+  commentId: number,
+  reactionType: Reactions
+) {
+  let react = undefined;
+  let message = "";
+  const reaction = await prisma.commentLike.findFirst({
+    where: {
+      userId: userId,
+      postId: postId,
+      commentId: commentId,
+    },
+  });
+  if (reaction) {
+    if (reaction.reaction === reactionType) {
+      react = await prisma.commentLike.delete({ where: { id: reaction.id } });
+      message = "Deleted reaction.";
+    } else {
+      react = await prisma.commentLike.update({
+        where: {
+          id: reaction.id,
+        },
+        data: {
+          reaction: reactionType,
+        },
+      });
+      message = "Updated reaction.";
+    }
+  } else {
+    react = await prisma.commentLike.create({
+      data: {
+        reaction: reactionType,
+        userId: userId,
+        postId,
+        commentId,
+      },
+    });
+    message = "Created the reaction.";
+  }
+  return { react, message };
+}

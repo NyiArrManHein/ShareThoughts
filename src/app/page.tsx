@@ -6,6 +6,7 @@ import { FaPlus } from "react-icons/fa";
 import useUser from "@/lib/useUser";
 import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
+import Html from "./components/Html";
 
 export default function Home() {
   // Use User
@@ -110,51 +111,53 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="flex flex-row w-full p-5">
-        {/* Left Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
+    <Html showNavbar={true}>
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <div className="flex flex-row w-full p-5">
+          {/* Left Sidebar */}
+          <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
 
-        {/* Posts */}
-        <div className="w-full px-3">
-          {/* Add Post Bottom */}
-          {isLoading ? (
-            "Loading ..."
-          ) : data.isLoggedIn ? (
-            <span
-              className={isAddPost ? "hidden" : "btn mb-1"}
-              onClick={() => setIsAddPost(!isAddPost)}
-            >
-              <FaPlus /> Add Post
-            </span>
-          ) : (
-            ""
-          )}
-          <AddPost
-            submitPost={submitPost}
-            isAddPost={isAddPost}
-            hideAddPost={hideAddPost}
-            title={title}
-            setTitle={setTitle}
-            content={content}
-            setContent={setContent}
-          />
-          <div>
-            {posts.map((post) => (
-              <Post
-                key={"post_" + post.id}
-                post={post}
-                userId={data.user?.id}
-                deletePostFromTheList={deletePostFromTheList}
-                updatePostFromTheList={updatePostFromTheList}
-              />
-            ))}
+          {/* Posts */}
+          <div className="w-full px-3">
+            {/* Add Post Bottom */}
+            {isLoading ? (
+              "Loading ..."
+            ) : data.isLoggedIn ? (
+              <span
+                className={isAddPost ? "hidden" : "btn mb-1"}
+                onClick={() => setIsAddPost(!isAddPost)}
+              >
+                <FaPlus /> Add Post
+              </span>
+            ) : (
+              ""
+            )}
+            <AddPost
+              submitPost={submitPost}
+              isAddPost={isAddPost}
+              hideAddPost={hideAddPost}
+              title={title}
+              setTitle={setTitle}
+              content={content}
+              setContent={setContent}
+            />
+            <div>
+              {posts.map((post) => (
+                <Post
+                  key={"post_" + post.id}
+                  post={post}
+                  userId={data.user?.id}
+                  deletePostFromTheList={deletePostFromTheList}
+                  updatePostFromTheList={updatePostFromTheList}
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Right Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
-      </div>
-    </main>
+          {/* Right Sidebar */}
+          <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
+        </div>
+      </main>
+    </Html>
   );
 }
