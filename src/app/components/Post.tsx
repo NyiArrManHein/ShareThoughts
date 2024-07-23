@@ -10,6 +10,7 @@ import ReactionsComponent from "./ReactionsComponent";
 import Image from "next/image";
 import profilePic from "../img/profile.webp";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function Post({
   post,
@@ -64,6 +65,10 @@ function Post({
 
     checkIfReported();
   }, [currentPost.id]);
+
+  useEffect(() => {
+    console.log("Current Post:", currentPost); // Debug logging
+  }, [currentPost]);
 
   /**
    * Reacting the Post
@@ -353,6 +358,14 @@ function Post({
     // }
   };
 
+  const formatHashtags = (hashtags: string) => {
+    return hashtags.split(",").map((tag, index) => (
+      <Link key={index} href={`/hashtags/${tag.slice(1)}`}>
+        <span className="text-blue-600 cursor-pointer">{tag} </span>
+      </Link>
+    ));
+  };
+
   return (
     <div className="card card-bordered border-base-300 flex flex-col text-justify p-3 mb-1 sm:text-sm text-base">
       {/* Post head */}
@@ -450,6 +463,10 @@ function Post({
       <div className=" card-body text-lg whitespace-pre-line overflow-auto">
         {currentPost.content}
       </div>
+      <div className="mb-4">
+        {currentPost.hashtags && formatHashtags(currentPost.hashtags)}
+      </div>
+
       <div className="w-full flex flex-row pt-2">
         <span className="flex w-full justify-center">
           {currentPost.likes.length}

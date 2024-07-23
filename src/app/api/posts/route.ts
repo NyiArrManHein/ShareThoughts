@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { createResponse, getSession } from "@/lib/session";
-import { isAuth } from "@/lib/utils";
+import { extractHashtags, isAuth } from "@/lib/utils";
 import {
   UpdatePostById,
   deletePostById,
@@ -32,6 +32,10 @@ export async function POST(request: NextRequest) {
       title,
       content
     );
+
+    // if (insertedPost) {
+    //   message = "Uploaded the post successfully";
+    // }
     message = insertedPost ? "Uploaded the post successfully" : message;
   }
   return createResponse(

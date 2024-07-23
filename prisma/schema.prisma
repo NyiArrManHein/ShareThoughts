@@ -49,6 +49,7 @@ model Post {
   updatedAt DateTime? @updatedAt
   title     String
   content   String
+  hashtags  String   @default("")
   published Boolean?  @default(false)
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int

@@ -26,6 +26,7 @@ export type PostModel = {
   updatedAt: Date;
   title: string;
   content: string;
+  hashtags: string;
   published: boolean;
   authorId: number;
   author: User;

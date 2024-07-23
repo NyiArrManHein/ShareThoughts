@@ -1,5 +1,6 @@
 import prisma from "@/db";
 import { AccountType, PostModel, PostType } from "@/lib/models";
+import { extractHashtags } from "@/lib/utils";
 
 export async function getPostForNewsFeed() {
   const posts = await prisma.post.findMany({
@@ -114,17 +115,49 @@ export async function getFollowing(userId: number) {
   return following.map((f) => f.author.username);
 }
 
+// export async function insertPostByUsername(
+//   authorId: number,
+//   postType: PostType,
+//   title: string,
+//   content: string
+// ) {
+//   const insertedPost = await prisma.post.create({
+//     data: {
+//       title: title,
+//       content: content,
+//       authorId: authorId,
+
+//     },
+//     include: {
+//       author: true,
+//       likes: true,
+//       comments: true,
+//       shares: true,
+//       hashtags: true,
+//     },
+//   });
+//   return insertedPost;
+// }
+
 export async function insertPostByUsername(
   authorId: number,
   postType: PostType,
   title: string,
   content: string
 ) {
-  const insertedPost = await prisma.post.create({
+  const hashtagsArray = extractHashtags(content);
+  const hashtags = hashtagsArray.join(",");
+  const cleanedContent = content
+    .replace(/#\w+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const post = await prisma.post.create({
     data: {
       title: title,
-      content: content,
+      content: cleanedContent,
       authorId: authorId,
+      hashtags: hashtags,
     },
     include: {
       author: true,
@@ -133,8 +166,10 @@ export async function insertPostByUsername(
       shares: true,
     },
   });
-  return insertedPost;
+
+  return post;
 }
+
 interface UpdatePostResponse {
   isEdited: boolean;
   updatedPost?: PostModel;
