@@ -1,4 +1,4 @@
-import { Comment, CommentLike, Like, Share } from "@prisma/client";
+import { Comment, Like, Share } from "@prisma/client";
 
 export type FlashMessage = {
   message: string;
@@ -42,7 +42,6 @@ export type CommentModel = {
   content: string;
   userId: number;
   postId: number;
-  commentReactions: CommentLike[];
 };
 
 export type ReportModel = {

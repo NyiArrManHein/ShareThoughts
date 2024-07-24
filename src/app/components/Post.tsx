@@ -1,7 +1,7 @@
 "use client";
 
 import { PostModel } from "@/lib/models";
-import { CommentLike, Like, Reactions } from "@prisma/client";
+import { Like, Reactions } from "@prisma/client";
 import { CommentModel } from "@/lib/models";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FaClock, FaComment, FaShare } from "react-icons/fa";
@@ -123,54 +123,54 @@ function Post({
     setShowReactions(!showReactions);
   };
 
-  const reactComment = async (
-    reaction: Reactions,
-    id: number,
-    comment: CommentModel
-  ) => {
-    if (userId) {
-      // Send to the server
-      const data = {
-        postId: post.id,
-        commentId: id,
-        reactionType: reaction,
-      };
-      const res = await fetch("/api/posts/comment/react/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const {
-          react,
-          message,
-        }: { react: CommentLike | undefined; message: string } =
-          await res.json();
-        if (react) {
-          const isThereReaction = comment.commentReactions.filter(
-            (like) => like.userId === react.userId && like.reaction === reaction
-          )[0];
-          const reactedPost = comment.commentReactions.filter(
-            (like) => like.userId !== react.userId
-          );
-          comment.commentReactions = reactedPost;
-          if (isThereReaction === undefined) {
-            comment.commentReactions.push(react);
+  // const reactComment = async (
+  //   reaction: Reactions,
+  //   id: number,
+  //   comment: CommentModel
+  // ) => {
+  //   if (userId) {
+  //     // Send to the server
+  //     const data = {
+  //       postId: post.id,
+  //       commentId: id,
+  //       reactionType: reaction,
+  //     };
+  //     const res = await fetch("/api/posts/comment/react/", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+  //     if (res.ok) {
+  //       const {
+  //         react,
+  //         message,
+  //       }: { react: CommentLike | undefined; message: string } =
+  //         await res.json();
+  //       if (react) {
+  //         const isThereReaction = comment.commentReactions.filter(
+  //           (like) => like.userId === react.userId && like.reaction === reaction
+  //         )[0];
+  //         const reactedPost = comment.commentReactions.filter(
+  //           (like) => like.userId !== react.userId
+  //         );
+  //         comment.commentReactions = reactedPost;
+  //         if (isThereReaction === undefined) {
+  //           comment.commentReactions.push(react);
 
-            setReaction(reaction);
-          } else {
-            setReaction(undefined);
-          }
-          setCurrentPost(post);
-        } else {
-          alert(message);
-        }
-      }
-    }
-    setShowReactions(!showReactions);
-  };
+  //           setReaction(reaction);
+  //         } else {
+  //           setReaction(undefined);
+  //         }
+  //         setCurrentPost(post);
+  //       } else {
+  //         alert(message);
+  //       }
+  //     }
+  //   }
+  //   setShowReactions(!showReactions);
+  // };
 
   // Edit Post
   const submitEdit = async (e: React.FormEvent<HTMLFormElement>) => {
