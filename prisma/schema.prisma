@@ -34,9 +34,8 @@ model User {
   likes         Like[]
   comments      Comment[]
   shares        Share[]
-  followers     Follower[]     @relation("follower")
-  following     Follower[]     @relation("following")
-  Notifications Notification[]
+  
+  
   Reply         Reply[]
 }
 
@@ -92,22 +91,8 @@ model Share {
   postId Int
 }
 
-model Follower {
-  id         Int  @id @default(autoincrement())
-  authorId   Int
-  followerId Int
-  author     User @relation("following", fields: [authorId], references: [id])
-  follower   User @relation("follower", fields: [followerId], references: [id])
-}
 
-model Notification {
-  id          Int     @id @default(autoincrement())
-  description String  @db.VarChar(255)
-  link        String  @db.VarChar(255)
-  read        Boolean @default(false)
-  author      User    @relation(fields: [authorId], references: [id])
-  authorId    Int
-}
+
 
 enum Role {
   USER

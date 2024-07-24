@@ -231,26 +231,6 @@ function Post({
     if (modal) {
       modal.showModal();
     }
-    // const data = {
-    //   postId: currentPost.id,
-    //   postTitle: currentPost.title,
-    //   postContent: currentPost.content,
-    // };
-    // const res = await fetch("/api/posts/", {
-    //   method: "PATCH",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(data),
-    // });
-    // if (res.ok) {
-    //   const { isDeleted, message }: { isDeleted: boolean; message: string } =
-    //     await res.json();
-    //   if (isDeleted) {
-    //     // Delete Post
-    //     deletePostFromTheList(currentPost.id);
-    //   } else {
-    //     alert(message);
-    //   }
-    // }
   };
 
   return (
