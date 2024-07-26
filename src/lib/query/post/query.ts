@@ -48,6 +48,28 @@ export async function getUserPosts(userId: number) {
   return { userPosts, followerCount, followingCount };
 }
 
+export async function getHashTagPosts(hashtag: string) {
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        hashtags: {
+          contains: hashtag, // Search for the exact hashtag
+        },
+      },
+      include: {
+        author: true,
+        likes: true,
+        comments: true,
+        shares: true,
+      },
+    });
+    return posts;
+  } catch (error) {
+    console.error("Error fetching posts by hashtag:", error);
+    throw new Error("Error fetching posts");
+  }
+}
+
 export async function getFollowStatus(
   authorId: number,
   userId: number
@@ -145,11 +167,16 @@ export async function insertPostByUsername(
   title: string,
   content: string
 ) {
+  // Validate title to prevent hashtags
+  const hashtagRegex = /#\w+/g;
+  if (hashtagRegex.test(title)) {
+    throw new Error("Hashtags are not allowed in the title.");
+  }
   const hashtagsArray = extractHashtags(content);
   const hashtags = hashtagsArray.join(",");
   const cleanedContent = content
     .replace(/#\w+/g, "")
-    .replace(/\s+/g, " ")
+    // .replace(/\s+/g, " ")
     .trim();
 
   const post = await prisma.post.create({
@@ -181,19 +208,32 @@ export async function UpdatePostById(
   userId: number,
   postTitle: string,
   postContent: string
+  // postHashtags: string
 ): Promise<UpdatePostResponse> {
   let isEdited = false;
   let message =
     "Failed to update the post. Post does not exist or unauthorized access.";
   let updatedPost: PostModel | undefined = undefined;
 
+  // Validate title to prevent hashtags
+  const hashtagRegex = /#\w+/g;
+  if (hashtagRegex.test(postTitle)) {
+    return { isEdited, message: "Hashtags are not allowed in the title." };
+  }
+
   const post = await prisma.post.findFirst({
     where: { id: postId, authorId: userId },
   });
   if (post) {
+    const hashtagsArray = extractHashtags(postContent);
+    const hashtags = hashtagsArray.join(",");
+    const cleanedContent = postContent
+      .replace(/#\w+/g, "")
+      // .replace(/\s+/g, " ")
+      .trim();
     updatedPost = (await prisma.post.update({
       where: { id: postId },
-      data: { title: postTitle, content: postContent },
+      data: { title: postTitle, content: cleanedContent, hashtags: hashtags },
     })) as unknown as PostModel; // Type assertion
     isEdited = true;
     message = `Updated post with id: ${post.id} successfully.`;

@@ -50,6 +50,12 @@ export default function Home() {
   // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Validate title to prevent hashtags
+    const hashtagRegex = /#\w+/g;
+    if (hashtagRegex.test(title)) {
+      alert("Hashtags are not allowed in the title. Please remove them.");
+      return;
+    }
     const data = {
       postType: PostType.PUBLIC,
       title: title,
@@ -98,12 +104,18 @@ export default function Home() {
   const updatePostFromTheList = (
     postId: number,
     postTitle: string,
-    postContent: string
+    postContent: string,
+    postHashtags: string
   ) => {
     setPosts((prevPosts) => {
       const updatedPosts = prevPosts.map((post) =>
         post.id === postId
-          ? { ...post, title: postTitle, content: postContent }
+          ? {
+              ...post,
+              title: postTitle,
+              content: postContent,
+              hashtags: postHashtags,
+            }
           : post
       );
       return updatedPosts;

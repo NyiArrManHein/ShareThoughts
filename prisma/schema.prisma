@@ -34,12 +34,12 @@ model User {
   likes         Like[]
   comments      Comment[]
   shares        Share[]
-  followers     Follower[]     @relation("follower")
-  following     Follower[]     @relation("following")
-  Notifications Notification[]
   Reply         Reply[]
   reports       Report[]
   commentLikes  CommentLike[] 
+  following     Follower[] @relation("following")
+  follower      Follower[] @relation("follower")
+  notifications Notification[]
 }
 
 model Post {

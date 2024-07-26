@@ -24,7 +24,8 @@ function Post({
   updatePostFromTheList: (
     postId: number,
     title: string,
-    content: string
+    content: string,
+    hashtags: string
   ) => void;
 }) {
   // States
@@ -175,6 +176,14 @@ function Post({
   // Edit Post
   const submitEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate title to prevent hashtags
+    const hashtagRegex = /#\w+/g;
+    if (hashtagRegex.test(editTitle)) {
+      alert("Hashtags are not allowed in the title. Please remove them.");
+      return;
+    }
+
     const data = {
       postId: currentPost.id,
       postTitle: editTitle,
@@ -195,7 +204,12 @@ function Post({
       //   modal.close();
       // }
       if (isEdited) {
-        updatePostFromTheList(post.id, updatedPost.title, updatedPost.content);
+        updatePostFromTheList(
+          post.id,
+          updatedPost.title,
+          updatedPost.content,
+          updatedPost.hashtags
+        );
         const modal = document.getElementById(
           `edit_modal_${post.id}`
         ) as HTMLDialogElement | null;
@@ -334,34 +348,21 @@ function Post({
       `edit_modal_${currentPost.id}`
     ) as HTMLDialogElement | null;
     if (modal) {
+      const hashtagsString = currentPost.hashtags
+        ? ` ${currentPost.hashtags
+            .split(",")
+            .map((tag) => `#${tag}`)
+            .join(" ")}`
+        : "";
+      setEditContent(currentPost.content + hashtagsString);
       modal.showModal();
     }
-    // const data = {
-    //   postId: currentPost.id,
-    //   postTitle: currentPost.title,
-    //   postContent: currentPost.content,
-    // };
-    // const res = await fetch("/api/posts/", {
-    //   method: "PATCH",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(data),
-    // });
-    // if (res.ok) {
-    //   const { isDeleted, message }: { isDeleted: boolean; message: string } =
-    //     await res.json();
-    //   if (isDeleted) {
-    //     // Delete Post
-    //     deletePostFromTheList(currentPost.id);
-    //   } else {
-    //     alert(message);
-    //   }
-    // }
   };
 
   const formatHashtags = (hashtags: string) => {
     return hashtags.split(",").map((tag, index) => (
-      <Link key={index} href={`/hashtags/${tag.slice(1)}`}>
-        <span className="text-blue-600 cursor-pointer">{tag} </span>
+      <Link key={index} href={`/hashtags/${tag}`}>
+        <span className="text-blue-600 cursor-pointer">#{tag} </span>
       </Link>
     ));
   };
