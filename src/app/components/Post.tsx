@@ -351,7 +351,8 @@ function Post({
       const hashtagsString = currentPost.hashtags
         ? ` ${currentPost.hashtags
             .split(",")
-            .map((tag) => `#${tag}`)
+            // .map((tag) => `#${tag}`)
+            .map((tag) => `${tag}`)
             .join(" ")}`
         : "";
       setEditContent(currentPost.content + hashtagsString);
@@ -359,12 +360,25 @@ function Post({
     }
   };
 
+  // const formatHashtags = (hashtags: string) => {
+  //   return hashtags.split(",").map((tag, index) => (
+
+  //     <Link key={index} href={`/hashtags/${tag}`}>
+  //       {/* <span className="text-blue-600 cursor-pointer">#{tag} </span> */}
+  //       <span className="text-blue-600 cursor-pointer">{tag} </span>
+  //     </Link>
+  //   ));
+  // };
+
   const formatHashtags = (hashtags: string) => {
-    return hashtags.split(",").map((tag, index) => (
-      <Link key={index} href={`/hashtags/${tag}`}>
-        <span className="text-blue-600 cursor-pointer">#{tag} </span>
-      </Link>
-    ));
+    return hashtags.split(",").map((tag, index) => {
+      const encodedTag = encodeURIComponent(tag);
+      return (
+        <Link key={index} href={`/hashtags/${encodedTag}`}>
+          <span className="text-blue-600 cursor-pointer">{tag} </span>
+        </Link>
+      );
+    });
   };
 
   return (

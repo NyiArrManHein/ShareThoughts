@@ -143,12 +143,22 @@ export function isEmail(email: string) {
     );
 }
 
+// export function extractHashtags(content: string): string[] {
+//   const regex = /#(\w+)/g;
+//   const matches = [];
+//   let match;
+//   while ((match = regex.exec(content)) !== null) {
+//     matches.push(match[1]);
+//   }
+//   return matches;
+// }
+
 export function extractHashtags(content: string): string[] {
   const regex = /#(\w+)/g;
   const matches = [];
   let match;
   while ((match = regex.exec(content)) !== null) {
-    matches.push(match[1]);
+    matches.push(match[0]);
   }
   return matches;
 }

@@ -10,10 +10,23 @@ const inter = Inter({ subsets: ["latin"] });
 interface HtmlProps {
   children: ReactNode;
   showNavbar?: boolean;
+  // theme: boolean;
+  // setTheme: React.Dispatch<React.SetStateAction<boolean>>;
+  // lang: string;
+  // dataTheme: string;
+  // className: string;
 }
 
 // function Html({ children }: { children: ReactNode }) {
-function Html({ children, showNavbar = true }: HtmlProps) {
+function Html({
+  children,
+  showNavbar = true,
+}: // lang,
+// dataTheme,
+// className,
+// theme,
+// setTheme
+HtmlProps) {
   // useUser
   const { data, isLoading, isError, mutateUser } = useUser();
 
@@ -46,28 +59,30 @@ function Html({ children, showNavbar = true }: HtmlProps) {
       data-theme={theme ? "dark" : "cupcake"}
       className="w-screen"
     >
-      <body
-        suppressHydrationWarning={true}
-        className={inter.className + " w-full overflow-x-hidden"}
-      >
-        {/* <Navbar
+      <>
+        <body
+          suppressHydrationWarning={true}
+          className={inter.className + " w-full overflow-x-hidden"}
+        >
+          {/* <Navbar
           theme={theme}
           setTheme={setTheme}
           data={data}
           logoutUser={logoutUser}
           isLoading={isLoading}
         /> */}
-        {showNavbar && (
-          <Navbar
-            theme={theme}
-            setTheme={setTheme}
-            data={data}
-            logoutUser={logoutUser}
-            isLoading={isLoading}
-          />
-        )}
-        {isLoading ? "Loading..." : children}
-      </body>
+          {showNavbar && (
+            <Navbar
+              theme={theme}
+              setTheme={setTheme}
+              data={data}
+              logoutUser={logoutUser}
+              isLoading={isLoading}
+            />
+          )}
+          {isLoading ? "Loading..." : children}
+        </body>
+      </>
     </html>
   );
 }

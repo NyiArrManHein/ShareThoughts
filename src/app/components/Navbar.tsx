@@ -1,8 +1,9 @@
 import { User } from "@/lib/models";
-import React from "react";
+import React, { useState } from "react";
 import { FaBell, FaMoon, FaSun } from "react-icons/fa";
 import Image from "next/image";
 import profilePic from "../img/profile.webp";
+import { useRouter } from "next/navigation";
 
 function Navbar({
   theme,
@@ -21,6 +22,24 @@ function Navbar({
   logoutUser: () => Promise<void>;
   isLoading: boolean;
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let cleanedQuery = searchQuery.trim().toLowerCase().replace(/\s+/g, "");
+    const encodedQuery = encodeURIComponent(cleanedQuery);
+
+    // if (cleanedQuery.startsWith("#")) {
+    //   cleanedQuery = cleanedQuery.substring(1);
+    // }
+    // cleanedQuery = cleanedQuery.replace(/\s+/g, ""); // Remove all spaces
+    // console.log("Cleaned Query:", cleanedQuery);
+
+    if (cleanedQuery) {
+      router.push(`/search?query=${encodedQuery}`);
+    }
+  };
   return (
     <nav className="navbar bg-base-200 top-0 sticky z-50 w-full">
       <div className="flex-1">
@@ -40,11 +59,15 @@ function Navbar({
           </span>
         </div>
         <div className="form-control">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-24 md:w-auto"
-          />
+          <form onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Search"
+              className="input input-bordered w-24 md:w-auto"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
         </div>
 
         {isLoading ? (

@@ -12,15 +12,17 @@ interface HashtagViewProps {
 const HashtagView = ({ params }: HashtagViewProps) => {
   const { data, isLoading, isError } = useUser();
   const { hashtagId } = params;
+  const decodedHashtagId = decodeURIComponent(hashtagId);
   const [posts, setPosts] = useState<PostModel[]>([]);
 
   useEffect(() => {
-    if (!hashtagId) return;
+    // if (!hashtagId) return;
+    if (!decodedHashtagId) return;
 
     fetch("/api/posts/hashtagView", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hashtagId }),
+      body: JSON.stringify({ decodedHashtagId }),
     })
       .then((res) => res.json())
       .then(({ posts: fetchedPosts }) => {
@@ -31,7 +33,7 @@ const HashtagView = ({ params }: HashtagViewProps) => {
         }));
         setPosts(postsWithDates);
       });
-  }, [hashtagId]);
+  }, [decodedHashtagId]);
 
   const deletePostFromTheList = (postId: number) => {
     const newPosts = posts.filter((post) => post.id !== postId);

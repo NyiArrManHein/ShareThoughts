@@ -7,6 +7,7 @@ import useUser from "@/lib/useUser";
 import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
 import Html from "./components/Html";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   // Use User

@@ -62,6 +62,9 @@ export async function getHashTagPosts(hashtag: string) {
         comments: true,
         shares: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     return posts;
   } catch (error) {
@@ -241,6 +244,71 @@ export async function UpdatePostById(
 
   return { isEdited, updatedPost, message };
 }
+
+export async function searchPosts(query: string) {
+  // const cleanedQuery = query.startsWith("#") ? query.substring(1) : query;
+  const isHashtagQuery = query.startsWith("#");
+  const cleanedQuery = query.toLowerCase().replace(/\s+/g, "");
+  console.log("Original Query:", query);
+  console.log("Cleaned Query:", cleanedQuery);
+  console.log("Is Hashtag Query:", isHashtagQuery);
+
+  const searchResults = await prisma.post.findMany({
+    include: {
+      author: true,
+      likes: true,
+      comments: true,
+      shares: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  console.log("Search Results:", searchResults);
+
+  const normalizedResults = searchResults.filter((post) => {
+    const normalizedTitle = post.title.toLowerCase().replace(/\s+/g, "");
+    const normalizedHashtagsArray = post.hashtags
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .split(",");
+    const normalizedUsername = post.author.username
+      .toLowerCase()
+      .replace(/\s+/g, "");
+
+    if (isHashtagQuery) {
+      return normalizedHashtagsArray.includes(cleanedQuery);
+    } else {
+      return (
+        normalizedTitle.includes(cleanedQuery) ||
+        normalizedHashtagsArray.includes(cleanedQuery) ||
+        normalizedUsername.includes(cleanedQuery)
+      );
+    }
+  });
+
+  return normalizedResults;
+}
+
+// return searchResults;
+
+// export async function searchPosts(query: string) {
+//   const cleanedQuery = query.startsWith("#") ? query.substring(1) : query;
+
+//   // Log the cleaned query to the console
+//   console.log("Cleaned Query:", cleanedQuery);
+
+//   const searchResults = await prisma.post.findMany({
+//     where: {
+//       OR: [
+//         { title: { contains: query, mode: "insensitive" } },
+//         { hashtags: { contains: query, mode: "insensitive" } },
+//       ],
+//     },
+//   });
+
+//   return searchResults;
+// }
 
 // export async function UpdatePostById(
 //   postId: number,
