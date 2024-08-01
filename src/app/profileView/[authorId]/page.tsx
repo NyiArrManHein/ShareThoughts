@@ -7,9 +7,15 @@ import Image from "next/image";
 import profilePic from "../../img/profile.webp";
 import Modal from "@/app/components/Modal";
 import Html from "@/app/components/Html";
+import { useRouter } from "next/navigation";
 
 interface ProfileViewProps {
   params: { authorId: string };
+}
+
+interface User {
+  id: number;
+  username: string;
 }
 
 const ProfileView = ({ params }: ProfileViewProps) => {
@@ -22,8 +28,10 @@ const ProfileView = ({ params }: ProfileViewProps) => {
   const [userId, setUserId] = useState<number | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalContent, setModalContent] = useState<string[]>([]);
+  // const [modalContent, setModalContent] = useState<string[]>([]);
+  const [modalContent, setModalContent] = useState<User[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -128,13 +136,19 @@ const ProfileView = ({ params }: ProfileViewProps) => {
       const response = await fetch(`/api/follow/${type}?userId=${authorId}`);
       if (response.ok) {
         const data = await response.json();
-        setModalContent(data.usernames);
+        // setModalContent(data.usernames);
+        setModalContent(data.users);
         setModalTitle(type === "followers" ? "Followers" : "Following");
         setIsModalOpen(true);
       }
     } catch (error) {
       console.error(`Failed to fetch ${type}`, error);
     }
+  };
+
+  const profileViewAction = (id: number) => {
+    // Navigate to the desired page
+    router.push(`/profileView/${id}`);
   };
 
   return (
@@ -222,7 +236,7 @@ const ProfileView = ({ params }: ProfileViewProps) => {
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <h2>{modalTitle}</h2>
           <ul>
-            {modalContent.map((username, index) => (
+            {/* {modalContent.map((username, index) => (
               <div className="flex flex-row items-center">
                 <div role="button" className="btn btn-ghost btn-circle avatar">
                   <div className="w-8 rounded-full">
@@ -235,6 +249,26 @@ const ProfileView = ({ params }: ProfileViewProps) => {
                   </div>
                 </div>
                 <li key={index}>{username}</li>
+              </div>
+            ))} */}
+            {modalContent.map(({ id, username }, index) => (
+              <div className="flex flex-row items-center" key={index}>
+                <div role="button" className="btn btn-ghost btn-circle avatar">
+                  <div className="w-8 rounded-full">
+                    <Image
+                      src={profilePic}
+                      alt="Profile Picture"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                </div>
+                <li
+                  onClick={() => profileViewAction(id)}
+                  className="cursor-pointer"
+                >
+                  {username}
+                </li>
               </div>
             ))}
           </ul>

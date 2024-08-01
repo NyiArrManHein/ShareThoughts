@@ -13,15 +13,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let usernames;
+    // let usernames;
+    let users;
     if (type === "followers") {
-      usernames = await getFollowers(userId);
+      users = await getFollowers(userId);
     } else if (type === "following") {
-      usernames = await getFollowing(userId);
+      users = await getFollowing(userId);
     } else {
       return NextResponse.json({ message: "Invalid type" }, { status: 400 });
     }
-    return NextResponse.json({ usernames }, { status: 200 });
+    return NextResponse.json({ users }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch data" },
