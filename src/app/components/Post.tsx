@@ -4,7 +4,7 @@ import { PostModel } from "@/lib/models";
 import { Like, Reactions } from "@prisma/client";
 import { CommentModel } from "@/lib/models";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { FaClock, FaComment, FaShare } from "react-icons/fa";
+import { FaClipboard, FaClock, FaComment, FaShare } from "react-icons/fa";
 import CommentComponent from "./CommentComponent";
 import ReactionsComponent from "./ReactionsComponent";
 import Image from "next/image";
@@ -39,6 +39,7 @@ function Post({
   );
   const [commentController, setCommentController] = useState("");
   const [comments, setComments] = useState<CommentModel[]>([]);
+  const [copied, setCopied] = useState(false);
   const options = {
     year: "numeric",
     month: "long",
@@ -49,6 +50,7 @@ function Post({
     timeZoneName: "short",
   };
   const router = useRouter();
+  const shareUrl = `${window.location.origin}/sharePostView/${post.id}`;
 
   useEffect(() => {
     setCurrentPost(post);
@@ -318,6 +320,58 @@ function Post({
     }
   };
 
+  // const handleShare = async () => {
+  //   const shareData = {
+  //     title: "Check out this post!",
+  //     text: "This is a great post you should read.",
+  //     url: shareUrl,
+  //   };
+
+  //   if (navigator.share) {
+  //     try {
+  //       await navigator.share(shareData);
+  //       console.log("Post shared successfully");
+  //     } catch (error) {
+  //       console.error("Error sharing post:", error);
+  //     }
+  //   } else {
+  //     // Fallback for browsers that don't support navigator.share
+  //     navigator.clipboard.writeText(shareUrl).then(
+  //       () => {
+  //         alert("Link copied to clipboard!");
+  //       },
+  //       (error) => {
+  //         console.error("Error copying link:", error);
+  //       }
+  //     );
+  //   }
+  // };
+
+  // const handleCopyLink = () => {
+  //   navigator.clipboard
+  //     .writeText(shareUrl)
+  //     .then(() => {
+  //       alert("Link copied to clipboard");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error copying link:", error);
+  //     });
+  // };
+
+  const handleCopyLink = () => {
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000); // Hide the message after 2 seconds
+      })
+      .catch((error) => {
+        console.error("Error copying link:", error);
+      });
+  };
+
   /**
    * Show Comment Modal
    */
@@ -490,7 +544,12 @@ function Post({
           {currentPost.comments.length}
         </span>
         <span className="flex w-full justify-center">
-          {currentPost.shares.length}
+          {/* {currentPost.shares.length} */}
+          {copied && (
+            <span className="bg-gray-200 text-black px-2 py-1 rounded">
+              Copied
+            </span>
+          )}
         </span>
       </div>
       <div className="w-full flex flex-row pt-2 text-2xl">
@@ -509,7 +568,10 @@ function Post({
           </span>
         </span>
         <span className="flex w-full justify-center">
-          <span className="hover:text-primary cursor-pointer">
+          <span
+            className="hover:text-primary cursor-pointer"
+            onClick={handleCopyLink}
+          >
             <FaShare />
           </span>
         </span>

@@ -73,6 +73,41 @@ export async function getHashTagPosts(hashtag: string) {
   }
 }
 
+// export const getPostById = async (postId: number) => {
+//   return await prisma.post.findUnique({
+//     where: { id: postId },
+//     include: {
+//       author: true,
+//       likes: true,
+//       comments: true,
+//       shares: true,
+//     },
+//   });
+// };
+
+export async function getPostById(postId: number) {
+  try {
+    console.log("Fetching post by ID:", postId);
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: {
+        author: true,
+        likes: true,
+        comments: true,
+        shares: true,
+      },
+    });
+
+    console.log("Post fetched from database:", post);
+
+    return post;
+  } catch (error) {
+    console.error("Error fetching post by ID:", error);
+    throw error;
+  }
+}
+
 export async function getFollowStatus(
   authorId: number,
   userId: number
