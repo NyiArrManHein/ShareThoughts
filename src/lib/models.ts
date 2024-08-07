@@ -89,13 +89,19 @@ export const AccountType = {
 
 export type AccountType = (typeof AccountType)[keyof typeof AccountType];
 
-export const PostType = {
-  PRIVATE: "PRIVATE",
-  PUBLIC: "PUBLIC",
-  ONLYME: "ONLYME",
-};
+// export const PostType = {
+//   PRIVATE: "PRIVATE",
+//   PUBLIC: "PUBLIC",
+//   ONLYME: "ONLYME",
+// };
 
-export type PostType = (typeof PostType)[keyof typeof PostType];
+export enum PostType {
+  PRIVATE = "PRIVATE",
+  PUBLIC = "PUBLIC",
+  ONLYME = "ONLYME",
+}
+
+// export type PostType = (typeof PostType)[keyof typeof PostType];
 
 /**
  * Messages

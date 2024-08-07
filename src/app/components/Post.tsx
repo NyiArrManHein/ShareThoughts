@@ -1,6 +1,6 @@
 "use client";
 
-import { PostModel } from "@/lib/models";
+import { PostModel, PostType } from "@/lib/models";
 import { Like, Reactions } from "@prisma/client";
 import { CommentModel } from "@/lib/models";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -25,13 +25,15 @@ function Post({
     postId: number,
     title: string,
     content: string,
-    hashtags: string
+    hashtags: string,
+    postType: PostType
   ) => void;
 }) {
   // States
   const [currentPost, setCurrentPost] = useState(post);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editContent, setEditContent] = useState(post.content);
+  const [editPostType, setEditPostType] = useState<PostType>(post.postType);
   const [isReported, setIsReported] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
   const [reaction, setReaction] = useState<Reactions | undefined>(
@@ -68,10 +70,6 @@ function Post({
 
     checkIfReported();
   }, [currentPost.id]);
-
-  useEffect(() => {
-    console.log("Current Post:", currentPost); // Debug logging
-  }, [currentPost]);
 
   /**
    * Reacting the Post
@@ -190,6 +188,7 @@ function Post({
       postId: currentPost.id,
       postTitle: editTitle,
       postContent: editContent,
+      postType: editPostType,
     };
     const res = await fetch("/api/posts/", {
       method: "PATCH",
@@ -210,7 +209,8 @@ function Post({
           post.id,
           updatedPost.title,
           updatedPost.content,
-          updatedPost.hashtags
+          updatedPost.hashtags,
+          updatedPost.postType
         );
         const modal = document.getElementById(
           `edit_modal_${post.id}`
@@ -638,6 +638,16 @@ function Post({
               value={editContent}
               onChange={(e) => setEditContent(e.currentTarget.value)}
             ></textarea>
+            <select
+              id="postType"
+              value={editPostType}
+              onChange={(e) => setEditPostType(e.target.value as PostType)}
+              className="input input-ghost focus:outline-none focus:border-none w-full"
+            >
+              <option value={PostType.PUBLIC}>Public</option>
+              <option value={PostType.PRIVATE}>Private</option>
+              <option value={PostType.ONLYME}>Only Me</option>
+            </select>
             {editTitle && editContent && (
               <input
                 className="btn btn-primary w-fit float-right mt-1"

@@ -10,9 +10,20 @@ import {
 import { PostModel, Results } from "@/lib/models";
 
 // Read Posts
+// export async function GET(request: NextRequest) {
+//   const response = new Response();
+//   const posts = await getPostForNewsFeed();
+//   return createResponse(response, JSON.stringify({ posts: posts }), {
+//     status: 200,
+//   });
+// }
+
 export async function GET(request: NextRequest) {
   const response = new Response();
-  const posts = await getPostForNewsFeed();
+  const { isLoggedIn, currentUser } = await isAuth(request, response);
+  console.log("Current user:", currentUser);
+  console.log("Current user ID:", currentUser?.id);
+  const posts = await getPostForNewsFeed(currentUser?.id!);
   return createResponse(response, JSON.stringify({ posts: posts }), {
     status: 200,
   });
@@ -61,7 +72,7 @@ export async function PATCH(request: NextRequest) {
   const { isLoggedIn, currentUser } = await isAuth(request, response);
 
   if (isLoggedIn) {
-    const { postId, postTitle, postContent } = await request.json();
+    const { postId, postTitle, postContent, postType } = await request.json();
     const {
       isEdited: _isEdited,
       updatedPost: _updatedPost,
@@ -70,7 +81,8 @@ export async function PATCH(request: NextRequest) {
       postId,
       currentUser?.id!,
       postTitle,
-      postContent
+      postContent,
+      postType
     );
     isEdited = _isEdited;
     updatedPost = _updatedPost;

@@ -21,6 +21,7 @@ export default function Home() {
 
   // Posts
   const [posts, setPosts] = useState<PostModel[]>([]);
+  const [postType, setPostType] = useState<PostType>(PostType.PUBLIC);
 
   // useEffect(() => {
   //   fetch("/api/posts/", {
@@ -43,10 +44,11 @@ export default function Home() {
           createdAt: new Date(post.createdAt),
           updatedAt: new Date(post.updatedAt),
         }));
+        console.log("Fetched posts:", postsWithDates); // Log the fetched posts
         setPosts(postsWithDates);
       })
     );
-  }, []);
+  }, [data]);
 
   // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +60,8 @@ export default function Home() {
       return;
     }
     const data = {
-      postType: PostType.PUBLIC,
+      // postType: PostType.PUBLIC,
+      postType,
       title: title,
       content: content,
     };
@@ -74,8 +77,10 @@ export default function Home() {
       post.createdAt = new Date(post.createdAt); // Convert createdAt to Date object
       const newPosts = [post, ...posts];
       setPosts(newPosts);
+
       setTitle("");
       setContent("");
+      setPostType(PostType.PUBLIC); // Reset postType to default
     }
   };
 
@@ -106,7 +111,8 @@ export default function Home() {
     postId: number,
     postTitle: string,
     postContent: string,
-    postHashtags: string
+    postHashtags: string,
+    postType: PostType
   ) => {
     setPosts((prevPosts) => {
       const updatedPosts = prevPosts.map((post) =>
@@ -116,6 +122,7 @@ export default function Home() {
               title: postTitle,
               content: postContent,
               hashtags: postHashtags,
+              postType: postType,
             }
           : post
       );
@@ -153,6 +160,8 @@ export default function Home() {
               setTitle={setTitle}
               content={content}
               setContent={setContent}
+              postType={postType}
+              setPostType={setPostType}
             />
             <div>
               {posts.map((post) => (

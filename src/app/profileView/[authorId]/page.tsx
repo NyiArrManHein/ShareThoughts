@@ -25,56 +25,113 @@ const ProfileView = ({ params }: ProfileViewProps) => {
   const [modalContent, setModalContent] = useState<string[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("/api/posts/profileView", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ authorId }),
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const { userPosts, followerCount, followingCount } =
-          await response.json();
-        // Convert date strings to Date objects
-        const postsWithDates = userPosts.map((post: PostModel) => ({
-          ...post,
-          createdAt: new Date(post.createdAt),
-          updatedAt: new Date(post.updatedAt),
-        }));
-        setPosts(postsWithDates);
-        if (userPosts.length > 0 && userPosts[0].author) {
-          setAuthorUsername(userPosts[0].author.username);
-          setUserId(userPosts[0].author.id);
-        }
-        setFollowerCount(followerCount);
-        setFollowingCount(followingCount);
-      } catch (error) {
-        console.error("Failed to fetch posts", error);
-      }
-    };
-    const checkFollowingStatus = async () => {
-      try {
-        const response = await fetch(`/api/follow?authorId=${authorId}}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setIsFollowing(data.isFollowing);
-        }
-      } catch (error) {
-        console.error("Failed to check follow status", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     try {
+  //       const response = await fetch("/api/posts/profileView", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ authorId }),
+  //       });
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       const { userPosts, followerCount, followingCount } =
+  //         await response.json();
+  //       // Convert date strings to Date objects
+  //       const postsWithDates = userPosts.map((post: PostModel) => ({
+  //         ...post,
+  //         createdAt: new Date(post.createdAt),
+  //         updatedAt: new Date(post.updatedAt),
+  //       }));
+  //       setPosts(postsWithDates);
+  //       if (userPosts.length > 0 && userPosts[0].author) {
+  //         setAuthorUsername(userPosts[0].author.username);
+  //         setUserId(userPosts[0].author.id);
+  //       }
+  //       setFollowerCount(followerCount);
+  //       setFollowingCount(followingCount);
+  //     } catch (error) {
+  //       console.error("Failed to fetch posts", error);
+  //     }
+  //   };
+  //   const checkFollowingStatus = async () => {
+  //     try {
+  //       const response = await fetch(`/api/follow?authorId=${authorId}}`, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setIsFollowing(data.isFollowing);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to check follow status", error);
+  //     }
+  //   };
 
+  //   fetchPosts();
+  //   checkFollowingStatus();
+  // }, [authorId]);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch("/api/posts/profileView", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ authorId }),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const { userPosts, followerCount, followingCount } =
+        await response.json();
+      // Convert date strings to Date objects
+      const postsWithDates = userPosts.map((post: PostModel) => ({
+        ...post,
+        createdAt: new Date(post.createdAt),
+        updatedAt: new Date(post.updatedAt),
+      }));
+      setPosts(postsWithDates);
+      if (userPosts.length > 0 && userPosts[0].author) {
+        setAuthorUsername(userPosts[0].author.username);
+        setUserId(userPosts[0].author.id);
+      }
+      setFollowerCount(followerCount);
+      setFollowingCount(followingCount);
+    } catch (error) {
+      console.error("Failed to fetch posts", error);
+    }
+  };
+
+  useEffect(() => {
     fetchPosts();
+  }, [authorId, isFollowing]);
+
+  const checkFollowingStatus = async () => {
+    try {
+      const response = await fetch(`/api/follow?authorId=${authorId}}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setIsFollowing(data.isFollowing);
+      }
+    } catch (error) {
+      console.error("Failed to check follow status", error);
+    }
+  };
+
+  useEffect(() => {
     checkFollowingStatus();
   }, [authorId]);
 

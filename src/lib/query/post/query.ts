@@ -1,9 +1,64 @@
 import prisma from "@/db";
-import { AccountType, PostModel, PostType } from "@/lib/models";
-import { extractHashtags } from "@/lib/utils";
+import { AccountType, PostModel } from "@/lib/models";
 
-export async function getPostForNewsFeed() {
+import { extractHashtags } from "@/lib/utils";
+import { PostType } from "@prisma/client";
+
+// export async function getPostForNewsFeed() {
+//   const posts = await prisma.post.findMany({
+//     where: {
+//       postType: "PUBLIC", // Filter for public posts only
+//     },
+//     orderBy: {
+//       createdAt: "desc",
+//     },
+//     include: {
+//       author: true,
+//       likes: true,
+//       comments: true,
+//       shares: true,
+//     },
+//   });
+
+//   return posts;
+// }
+
+export async function getPostForNewsFeed(userId?: number) {
+  let followedAuthorIds: number[] = [];
+
+  if (userId) {
+    // Fetch the IDs of authors followed by the current user
+    const followedAuthors = await prisma.follower.findMany({
+      where: {
+        followerId: userId,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+
+    followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
+    console.log("Followed author IDs:", followedAuthorIds);
+  }
+
   const posts = await prisma.post.findMany({
+    where: userId
+      ? {
+          OR: [
+            { postType: "PUBLIC" }, // Public posts visible to everyone
+            { postType: "ONLYME", authorId: userId }, // OnlyMe posts by the user themselves
+            { postType: "PRIVATE", authorId: userId }, // Private posts by the user themselves
+            {
+              AND: [
+                { postType: "PRIVATE" }, // Private posts
+                { authorId: { in: followedAuthorIds } }, // By authors followed by the current user
+              ],
+            },
+          ],
+        }
+      : {
+          postType: "PUBLIC", // If no user is logged in, show only public posts
+        },
     orderBy: {
       createdAt: "desc",
     },
@@ -15,6 +70,7 @@ export async function getPostForNewsFeed() {
     },
   });
 
+  console.log("Fetched posts:", JSON.stringify(posts, null, 2));
   return posts;
 }
 
@@ -30,9 +86,59 @@ export async function getFollowingCount(userId: number) {
   });
 }
 
-export async function getUserPosts(userId: number) {
+// export async function getUserPosts(userId: number) {
+//   const userPosts = await prisma.post.findMany({
+//     where: { authorId: userId },
+//     include: {
+//       likes: true,
+//       comments: true,
+//       shares: true,
+//       author: true,
+//     },
+//     orderBy: {
+//       createdAt: "desc",
+//     },
+//   });
+//   const followerCount = await getFollowerCount(userId);
+//   const followingCount = await getFollowingCount(userId);
+//   return { userPosts, followerCount, followingCount };
+// }
+
+export async function getUserPosts(
+  viewerId: number | null,
+  profileUserId: number
+) {
+  let followedAuthorIds: number[] = [];
+
+  if (viewerId) {
+    const followedAuthors = await prisma.follower.findMany({
+      where: {
+        followerId: viewerId,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+    followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
+  }
+
   const userPosts = await prisma.post.findMany({
-    where: { authorId: userId },
+    where: viewerId
+      ? {
+          OR: [
+            { postType: "PUBLIC", authorId: profileUserId },
+            { postType: "ONLYME", authorId: viewerId },
+            { postType: "PRIVATE", authorId: viewerId },
+            {
+              AND: [
+                { postType: "PRIVATE" },
+                { authorId: profileUserId },
+                { authorId: { in: followedAuthorIds } },
+              ],
+            },
+          ],
+        }
+      : { postType: "PUBLIC", authorId: profileUserId },
     include: {
       likes: true,
       comments: true,
@@ -43,8 +149,9 @@ export async function getUserPosts(userId: number) {
       createdAt: "desc",
     },
   });
-  const followerCount = await getFollowerCount(userId);
-  const followingCount = await getFollowingCount(userId);
+
+  const followerCount = await getFollowerCount(profileUserId);
+  const followingCount = await getFollowingCount(profileUserId);
   return { userPosts, followerCount, followingCount };
 }
 
@@ -222,6 +329,7 @@ export async function insertPostByUsername(
       title: title,
       content: cleanedContent,
       authorId: authorId,
+      postType: postType,
       hashtags: hashtags,
     },
     include: {
@@ -245,7 +353,8 @@ export async function UpdatePostById(
   postId: number,
   userId: number,
   postTitle: string,
-  postContent: string
+  postContent: string,
+  postType: PostType
   // postHashtags: string
 ): Promise<UpdatePostResponse> {
   let isEdited = false;
@@ -271,7 +380,12 @@ export async function UpdatePostById(
       .trim();
     updatedPost = (await prisma.post.update({
       where: { id: postId },
-      data: { title: postTitle, content: cleanedContent, hashtags: hashtags },
+      data: {
+        title: postTitle,
+        content: cleanedContent,
+        hashtags: hashtags,
+        postType: postType,
+      },
     })) as unknown as PostModel; // Type assertion
     isEdited = true;
     message = `Updated post with id: ${post.id} successfully.`;
