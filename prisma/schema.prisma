@@ -127,8 +127,8 @@ model Follower {
   id         Int  @id @default(autoincrement())
   authorId   Int
   followerId Int
-  author     User @relation("following", fields: [authorId], references: [id])
-  follower   User @relation("follower", fields: [followerId], references: [id])
+  author     User @relation("following", fields: [authorId], references: [id], onDelete: Cascade)
+  follower   User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
 
   @@unique([authorId, followerId])
 }
