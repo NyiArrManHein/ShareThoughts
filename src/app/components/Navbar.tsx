@@ -57,10 +57,10 @@ function Navbar({
                 role="button"
                 className="text text-3xl text-success indicator"
               >
-                <span className="indicator-item text text-xs badge badge-info">
+                {/* <span className="indicator-item text text-xs badge badge-info">
                   1
                 </span>
-                <FaBell />
+                <FaBell /> */}
               </div>
               <ul
                 tabIndex={0}
