@@ -266,12 +266,31 @@ export async function toggleFollow(authorId: number, followerId: number) {
   }
 }
 
+// export async function getFollowers(userId: number) {
+//   const followers = await prisma.follower.findMany({
+//     where: { authorId: userId },
+//     include: { follower: true },
+//   });
+//   return followers.map((f) => f.follower.username);
+// }
+
+// export async function getFollowing(userId: number) {
+//   const following = await prisma.follower.findMany({
+//     where: { followerId: userId },
+//     include: { author: true },
+//   });
+//   return following.map((f) => f.author.username);
+// }
+
 export async function getFollowers(userId: number) {
   const followers = await prisma.follower.findMany({
     where: { authorId: userId },
     include: { follower: true },
   });
-  return followers.map((f) => f.follower.username);
+  return followers.map((f) => ({
+    id: f.follower.id,
+    username: f.follower.username,
+  }));
 }
 
 export async function getFollowing(userId: number) {
@@ -279,7 +298,10 @@ export async function getFollowing(userId: number) {
     where: { followerId: userId },
     include: { author: true },
   });
-  return following.map((f) => f.author.username);
+  return following.map((f) => ({
+    id: f.author.id,
+    username: f.author.username,
+  }));
 }
 
 // export async function insertPostByUsername(
