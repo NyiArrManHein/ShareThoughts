@@ -38,7 +38,6 @@ export async function getPostForNewsFeed(userId?: number) {
     });
 
     followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
-    console.log("Followed author IDs:", followedAuthorIds);
   }
 
   const posts = await prisma.post.findMany({
@@ -70,7 +69,6 @@ export async function getPostForNewsFeed(userId?: number) {
     },
   });
 
-  console.log("Fetched posts:", JSON.stringify(posts, null, 2));
   return posts;
 }
 
@@ -194,8 +192,6 @@ export async function getHashTagPosts(hashtag: string) {
 
 export async function getPostById(postId: number) {
   try {
-    console.log("Fetching post by ID:", postId);
-
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
@@ -205,8 +201,6 @@ export async function getPostById(postId: number) {
         shares: true,
       },
     });
-
-    console.log("Post fetched from database:", post);
 
     return post;
   } catch (error) {
@@ -239,8 +233,6 @@ export async function toggleFollow(authorId: number, followerId: number) {
       },
     });
 
-    console.log("Follow record:", followRecord);
-
     if (followRecord) {
       // If exists, unfollow (delete the record)
       await prisma.follower.delete({
@@ -248,7 +240,6 @@ export async function toggleFollow(authorId: number, followerId: number) {
           id: followRecord.id,
         },
       });
-      console.log("Unfollowed successfully");
     } else {
       // If not exists, follow (create the record)
       await prisma.follower.create({
@@ -257,7 +248,6 @@ export async function toggleFollow(authorId: number, followerId: number) {
           followerId: followerId,
         },
       });
-      console.log("Followed successfully");
     }
     return true;
   } catch (error) {
@@ -420,9 +410,6 @@ export async function searchPosts(query: string) {
   // const cleanedQuery = query.startsWith("#") ? query.substring(1) : query;
   const isHashtagQuery = query.startsWith("#");
   const cleanedQuery = query.toLowerCase().replace(/\s+/g, "");
-  console.log("Original Query:", query);
-  console.log("Cleaned Query:", cleanedQuery);
-  console.log("Is Hashtag Query:", isHashtagQuery);
 
   const searchResults = await prisma.post.findMany({
     include: {
@@ -435,7 +422,6 @@ export async function searchPosts(query: string) {
       createdAt: "desc",
     },
   });
-  console.log("Search Results:", searchResults);
 
   const normalizedResults = searchResults.filter((post) => {
     const normalizedTitle = post.title.toLowerCase().replace(/\s+/g, "");
@@ -615,13 +601,13 @@ export async function deletePostByReportId(reportId: number) {
   });
 }
 
-export async function getComment(postId: number) {
-  let message: string = "Failed to fetch comments";
-  const comments = await prisma.comment.findMany({
-    where: { postId: postId },
-    include: {
-      user: true,
-    },
-  });
-  return { comments, message };
-}
+// export async function getComment(postId: number) {
+//   let message: string = "Failed to fetch comments";
+//   const comments = await prisma.comment.findMany({
+//     where: { postId: postId },
+//     include: {
+//       user: true,
+//     },
+//   });
+//   return { comments, message };
+// }

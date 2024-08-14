@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
   if (isLoggedIn) {
     const { authorId } = await request.json();
-    console.log("Received follow request:", { authorId });
+
     const authorIdInt = parseInt(authorId, 10);
 
     if (isNaN(authorIdInt)) {

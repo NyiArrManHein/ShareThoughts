@@ -52,13 +52,8 @@ const Search = () => {
 
       if (res.ok) {
         const { searchResults } = await res.json();
-        console.log("Search response:", searchResults);
 
         setPosts(Array.isArray(searchResults) ? searchResults : []);
-        console.log(
-          "Updated posts state:",
-          Array.isArray(searchResults) ? searchResults : []
-        );
       }
 
       setLoading(false);

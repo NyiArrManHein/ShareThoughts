@@ -42,9 +42,26 @@ export async function insertIntoReact(
   return { react, message };
 }
 
+export async function fetchCommentReaction(userId: number, commentId: number) {
+  try {
+    const react = await prisma.commentLike.findFirst({
+      where: {
+        userId: userId,
+        commentId: commentId,
+      },
+    });
+    return {
+      // react: react?.reaction,
+      react,
+      message: react ? "Reaction found" : "No reaction found",
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function insertIntoCommentReact(
   userId: number,
-  postId: number,
   commentId: number,
   reactionType: Reactions
 ) {
@@ -53,7 +70,6 @@ export async function insertIntoCommentReact(
   const reaction = await prisma.commentLike.findFirst({
     where: {
       userId: userId,
-      postId: postId,
       commentId: commentId,
     },
   });
@@ -77,7 +93,6 @@ export async function insertIntoCommentReact(
       data: {
         reaction: reactionType,
         userId: userId,
-        postId,
         commentId,
       },
     });

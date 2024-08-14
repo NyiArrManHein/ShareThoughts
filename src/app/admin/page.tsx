@@ -27,18 +27,11 @@ export default function Admin() {
     fetchReports();
     // Set up polling
     const intervalId = setInterval(fetchReports, 5000); // Fetch reports every 5 seconds
-    console.log("Component mounted, interval set");
 
     return () => {
       clearInterval(intervalId);
-      console.log("Component unmounted, interval cleared");
     }; // Clear the interval on component unmount
   }, []);
-
-  // Log the state after it has been updated
-  useEffect(() => {
-    console.log("Updated Reports State:", reports);
-  }, [reports]);
 
   const handleViewPost = (post: PostModel) => {
     setSelectedPost(post);

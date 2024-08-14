@@ -21,8 +21,7 @@ import { PostModel, Results } from "@/lib/models";
 export async function GET(request: NextRequest) {
   const response = new Response();
   const { isLoggedIn, currentUser } = await isAuth(request, response);
-  console.log("Current user:", currentUser);
-  console.log("Current user ID:", currentUser?.id);
+
   const posts = await getPostForNewsFeed(currentUser?.id!);
   return createResponse(response, JSON.stringify({ posts: posts }), {
     status: 200,

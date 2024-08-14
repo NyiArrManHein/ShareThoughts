@@ -15,7 +15,6 @@ function Verify({ params }: { params: { token: string } }) {
       body: JSON.stringify({ token: params.token }),
     }).then((res) =>
       res.json().then((data) => {
-        console.log(isVerified);
         if (data?.isVerified) {
           setIsVerified(true);
           setIsSubmitting(false);

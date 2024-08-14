@@ -44,7 +44,7 @@ export default function Home() {
           createdAt: new Date(post.createdAt),
           updatedAt: new Date(post.updatedAt),
         }));
-        console.log("Fetched posts:", postsWithDates); // Log the fetched posts
+
         setPosts(postsWithDates);
       })
     );

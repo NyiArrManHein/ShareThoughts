@@ -57,7 +57,6 @@ model Post {
   comments  Comment[]
   shares    Share[]
   reports   Report[]
-  commentLikes CommentLike[]
 }
 
 model Like {
@@ -86,8 +85,6 @@ model CommentLike{
   reaction Reactions @default(LIKE)
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
-  post     Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId   Int
   comment  Comment   @relation(fields:[commentId],references:[id],onDelete:Cascade)
   commentId Int
 }

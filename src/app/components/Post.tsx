@@ -11,6 +11,7 @@ import Image from "next/image";
 import profilePic from "../img/profile.webp";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Modal from "./Modal";
 
 function Post({
   post,
@@ -39,9 +40,20 @@ function Post({
   const [reaction, setReaction] = useState<Reactions | undefined>(
     currentPost.likes.filter((like) => like.userId === userId)[0]?.reaction
   );
+
   const [commentController, setCommentController] = useState("");
   const [comments, setComments] = useState<CommentModel[]>([]);
   const [copied, setCopied] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // const [editingComment, setEditingComment] = useState<string>("");
+  const [editingComment, setEditingComment] = useState<{
+    id: number | null;
+    content: string;
+  }>({
+    id: null,
+    content: "",
+  });
+
   const options = {
     year: "numeric",
     month: "long",
@@ -123,55 +135,6 @@ function Post({
     }
     setShowReactions(!showReactions);
   };
-
-  // const reactComment = async (
-  //   reaction: Reactions,
-  //   id: number,
-  //   comment: CommentModel
-  // ) => {
-  //   if (userId) {
-  //     // Send to the server
-  //     const data = {
-  //       postId: post.id,
-  //       commentId: id,
-  //       reactionType: reaction,
-  //     };
-  //     const res = await fetch("/api/posts/comment/react/", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(data),
-  //     });
-  //     if (res.ok) {
-  //       const {
-  //         react,
-  //         message,
-  //       }: { react: CommentLike | undefined; message: string } =
-  //         await res.json();
-  //       if (react) {
-  //         const isThereReaction = comment.commentReactions.filter(
-  //           (like) => like.userId === react.userId && like.reaction === reaction
-  //         )[0];
-  //         const reactedPost = comment.commentReactions.filter(
-  //           (like) => like.userId !== react.userId
-  //         );
-  //         comment.commentReactions = reactedPost;
-  //         if (isThereReaction === undefined) {
-  //           comment.commentReactions.push(react);
-
-  //           setReaction(reaction);
-  //         } else {
-  //           setReaction(undefined);
-  //         }
-  //         setCurrentPost(post);
-  //       } else {
-  //         alert(message);
-  //       }
-  //     }
-  //   }
-  //   setShowReactions(!showReactions);
-  // };
 
   // Edit Post
   const submitEdit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -320,43 +283,68 @@ function Post({
     }
   };
 
-  // const handleShare = async () => {
-  //   const shareData = {
-  //     title: "Check out this post!",
-  //     text: "This is a great post you should read.",
-  //     url: shareUrl,
-  //   };
+  const deleteComment = async (id: number) => {
+    const data = {
+      commentId: id,
+    };
+    const res = await fetch("/api/posts/comment/", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const { isDeleted, message }: { isDeleted: boolean; message: string } =
+        await res.json();
+      if (isDeleted) {
+        const newComments = comments.filter((comment) => comment.id !== id);
+        setComments(newComments);
+        currentPost.comments = currentPost.comments.filter(
+          (comment) => comment.id !== id
+        );
+      } else {
+        alert(message);
+      }
+    }
+  };
 
-  //   if (navigator.share) {
-  //     try {
-  //       await navigator.share(shareData);
-  //       console.log("Post shared successfully");
-  //     } catch (error) {
-  //       console.error("Error sharing post:", error);
-  //     }
-  //   } else {
-  //     // Fallback for browsers that don't support navigator.share
-  //     navigator.clipboard.writeText(shareUrl).then(
-  //       () => {
-  //         alert("Link copied to clipboard!");
-  //       },
-  //       (error) => {
-  //         console.error("Error copying link:", error);
-  //       }
-  //     );
-  //   }
-  // };
+  const handleEditComment = (comment: CommentModel) => {
+    setEditingComment({
+      id: comment.id,
+      content: comment.content,
+    });
+    setIsModalOpen(true); // Open the modal
+  };
 
-  // const handleCopyLink = () => {
-  //   navigator.clipboard
-  //     .writeText(shareUrl)
-  //     .then(() => {
-  //       alert("Link copied to clipboard");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error copying link:", error);
-  //     });
-  // };
+  const commentEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = {
+      commentId: editingComment.id,
+      commentContent: editingComment.content,
+    };
+    const res = await fetch("api/posts/comment", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const { isEdited, updatedComment, message } = await res.json();
+      if (isEdited) {
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === updatedComment.id
+              ? {
+                  ...comment,
+                  content: updatedComment.content,
+                }
+              : comment
+          )
+        );
+        setIsModalOpen(false);
+      } else {
+        alert(message);
+      }
+    }
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard
@@ -392,9 +380,17 @@ function Post({
     } else {
       alert("Connection failed.");
     }
-    console.log(comments);
+
     // @ts-ignore
     document.getElementById(`comment_modal_${currentPost.id}`)!.showModal();
+  };
+
+  const onCloseCommentModal = () => {
+    setIsModalOpen(false);
+    const commentModal = document.getElementById(
+      "comment_modal_" + post.id
+    ) as HTMLDialogElement;
+    commentModal?.close();
   };
 
   const showEditModal = async () => {
@@ -580,12 +576,36 @@ function Post({
       <dialog id={"comment_modal_" + post.id} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Comment Section</h3>
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <form onSubmit={commentEdit}>
+              <textarea
+                className="input input-ghost focus:outline-none focus:border-none w-full"
+                name="commentContent"
+                id="commentContent"
+                value={editingComment.content}
+                onChange={(e) =>
+                  setEditingComment({
+                    ...editingComment,
+                    content: e.target.value,
+                  })
+                }
+              />
+              <input
+                className="btn btn-primary w-fit float-right mt-1"
+                type="submit"
+                value="Edit"
+              ></input>
+            </form>
+          </Modal>
           <div className="py-4">
             <span className="flex flex-col">
               {comments.map((_comment) => (
                 <CommentComponent
                   key={"commentId" + _comment.id}
                   comment={_comment}
+                  userId={userId}
+                  onDelete={deleteComment}
+                  onEdit={handleEditComment}
                 />
               ))}
             </span>
@@ -614,7 +634,11 @@ function Post({
             </form>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
+        <form
+          method="dialog"
+          className="modal-backdrop"
+          onClick={onCloseCommentModal}
+        >
           <button>close</button>
         </form>
       </dialog>

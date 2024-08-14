@@ -38,8 +38,6 @@ const SharedPostView = ({ params }: SharedPostViewProps) => {
   useEffect(() => {
     const fetchPostById = async (postId: string) => {
       try {
-        console.log("Fetching post with ID:", postId);
-
         const response = await fetch(`/api/posts/sharePostView/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -47,7 +45,7 @@ const SharedPostView = ({ params }: SharedPostViewProps) => {
         });
 
         const data = await response.json();
-        console.log("Fetched post data:", data);
+
         setPost(data.post);
       } catch (error) {
         console.error("Error fetching post:", error);
