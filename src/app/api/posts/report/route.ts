@@ -40,8 +40,9 @@ export async function POST(request: NextRequest) {
   const { isLoggedIn, currentUser } = await isAuth(request, response);
 
   if (isLoggedIn) {
-    const { postId } = await request.json();
-    const report = await reportPost(postId, currentUser?.id!);
+    const { postId, reportReason } = await request.json();
+
+    const report = await reportPost(postId, reportReason, currentUser?.id!);
     if (report) {
       message = "Reported the post successfully";
       isReported = true;

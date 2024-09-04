@@ -101,15 +101,18 @@ const Search = () => {
 
           <div className="w-full px-3">
             {posts.length > 0 ? (
-              posts.map((post) => (
-                <Post
-                  key={"post_" + post.id}
-                  post={post}
-                  userId={data.user?.id}
-                  deletePostFromTheList={deletePostFromTheList}
-                  updatePostFromTheList={updatePostFromTheList}
-                />
-              ))
+              posts.map(
+                (post) =>
+                  post.isDeleted !== true && (
+                    <Post
+                      key={"post_" + post.id}
+                      post={post}
+                      userId={data.user?.id}
+                      deletePostFromTheList={deletePostFromTheList}
+                      updatePostFromTheList={updatePostFromTheList}
+                    />
+                  )
+              )
             ) : (
               <p>No posts found</p>
             )}

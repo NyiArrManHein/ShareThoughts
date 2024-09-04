@@ -203,12 +203,11 @@ const ProfileView = ({ params }: ProfileViewProps) => {
   };
 
   const profileViewAction = (id: number) => {
-    // Navigate to the desired page
     router.push(`/profileView/${id}`);
   };
 
   return (
-    <Html showNavbar={false}>
+    <Html showNavbar={true}>
       <>
         {/* {userId !== data.user?.id && (
         <button
@@ -243,7 +242,7 @@ const ProfileView = ({ params }: ProfileViewProps) => {
                     </div>
                   </div>
                   <span className=" pt-2 pl-2">{authorUsername}</span>
-                  {userId !== data.user?.id && (
+                  {data && userId !== data.user?.id && (
                     <button
                       onClick={handleFollowClick}
                       className={`mt-4 px-4 py-1 rounded border ${
@@ -275,15 +274,19 @@ const ProfileView = ({ params }: ProfileViewProps) => {
                 </div>
               </div>
 
-              {posts.map((post) => (
-                <Post
-                  key={`post_${post.id}`}
-                  post={post}
-                  userId={data.user?.id}
-                  deletePostFromTheList={deletePostFromTheList}
-                  updatePostFromTheList={updatePostFromTheList}
-                />
-              ))}
+              {data &&
+                posts.map(
+                  (post) =>
+                    post.isDeleted !== true && (
+                      <Post
+                        key={`post_${post.id}`}
+                        post={post}
+                        userId={data.user?.id}
+                        deletePostFromTheList={deletePostFromTheList}
+                        updatePostFromTheList={updatePostFromTheList}
+                      />
+                    )
+                )}
             </div>
             {/* Right Sidebar */}
             <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>

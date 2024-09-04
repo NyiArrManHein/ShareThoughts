@@ -57,6 +57,8 @@ model Post {
   comments  Comment[]
   shares    Share[]
   reports   Report[]
+  isDeleted Boolean @default(false)
+  notifications Notification[]
 }
 
 model Like {
@@ -112,6 +114,7 @@ model Report {
   postId       Int
   reportedBy   User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
   reportedById Int
+  reportReason ReportReason
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -132,11 +135,11 @@ model Follower {
 
 model Notification {
   id          Int     @id @default(autoincrement())
-  description String  @db.VarChar(255)
-  link        String  @db.VarChar(255)
-  read        Boolean @default(false)
-  author      User    @relation(fields: [authorId], references: [id])
+  author      User    @relation(fields: [authorId], references: [id],onDelete: Cascade)
   authorId    Int
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  createdAt DateTime? @default(now())
 }
 
 enum Role {
@@ -167,3 +170,13 @@ enum Reactions {
   HAHA
   SAD
 }
+
+enum ReportReason{
+  HATE
+  ADULT
+  MISLEADING
+  OTHER
+}
+
+
+

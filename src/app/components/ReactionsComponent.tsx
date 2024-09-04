@@ -15,6 +15,7 @@ function ReactionsComponent({
 }) {
   return (
     <span className="flex w-full justify-center">
+      {/* <span className="absolute"> */}
       <span className="absolute">
         <div
           className={

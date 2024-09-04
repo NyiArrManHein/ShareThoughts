@@ -8,6 +8,8 @@ import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
 import Html from "./components/Html";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Role } from "@prisma/client";
 
 export default function Home() {
   // Use User
@@ -22,6 +24,7 @@ export default function Home() {
   // Posts
   const [posts, setPosts] = useState<PostModel[]>([]);
   const [postType, setPostType] = useState<PostType>(PostType.PUBLIC);
+  const router = useRouter();
 
   // useEffect(() => {
   //   fetch("/api/posts/", {
@@ -50,13 +53,23 @@ export default function Home() {
     );
   }, [data]);
 
+  useEffect(() => {
+    if (!isLoading && data) {
+      if (data.user?.role === Role.ADMIN) {
+        // Redirect to the admin page
+        router.push("/admin");
+      }
+    }
+  }, [data, isLoading, router]);
+
   // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validate title to prevent hashtags
     const hashtagRegex = /#\w+/g;
     if (hashtagRegex.test(title)) {
-      alert("Hashtags are not allowed in the title. Please remove them.");
+      // alert("Hashtags are not allowed in the title. Please remove them.");
+      toast("Hashtags are not allowed in the title. Please remove them.");
       return;
     }
     const data = {
@@ -164,15 +177,19 @@ export default function Home() {
               setPostType={setPostType}
             />
             <div>
-              {posts.map((post) => (
-                <Post
-                  key={"post_" + post.id}
-                  post={post}
-                  userId={data.user?.id}
-                  deletePostFromTheList={deletePostFromTheList}
-                  updatePostFromTheList={updatePostFromTheList}
-                />
-              ))}
+              {data &&
+                posts.map(
+                  (post) =>
+                    post.isDeleted !== true && (
+                      <Post
+                        key={"post_" + post.id}
+                        post={post}
+                        userId={data.user?.id}
+                        deletePostFromTheList={deletePostFromTheList}
+                        updatePostFromTheList={updatePostFromTheList}
+                      />
+                    )
+                )}
             </div>
           </div>
 

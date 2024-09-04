@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
   const { isLoggedIn, currentUser } = await isAuth(request, response);
 
   const posts = await getPostForNewsFeed(currentUser?.id!);
+  // console.log("Posts: ", posts[0].comments[0].commentLikes);
   return createResponse(response, JSON.stringify({ posts: posts }), {
     status: 200,
   });

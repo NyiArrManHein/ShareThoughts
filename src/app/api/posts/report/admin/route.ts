@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-export async function DELETE(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   const { reportId } = await request.json();
   // await deletePostByReportId(reportId);\
   const response = new Response();

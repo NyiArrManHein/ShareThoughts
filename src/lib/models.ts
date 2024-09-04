@@ -1,4 +1,11 @@
-import { Comment, CommentLike, Like, Share } from "@prisma/client";
+import {
+  Comment,
+  CommentLike,
+  Like,
+  Post,
+  ReportReason,
+  Share,
+} from "@prisma/client";
 
 export type FlashMessage = {
   message: string;
@@ -18,6 +25,10 @@ export type User = {
   verifyToken: string | null;
 };
 
+export type LikeWithUser = Like & {
+  user: User;
+};
+
 export type PostModel = {
   [x: string]: {};
   id: number;
@@ -30,9 +41,14 @@ export type PostModel = {
   published: boolean;
   authorId: number;
   author: User;
-  likes: Like[];
+  likes: LikeWithUser[];
   comments: CommentModel[];
   shares: Share[];
+  isDeleted: boolean;
+};
+
+export type commentLikeWithUser = CommentLike & {
+  user: User;
 };
 
 export type CommentModel = {
@@ -42,7 +58,14 @@ export type CommentModel = {
   content: string;
   userId: number;
   postId: number;
-  commentlikes: CommentLike[];
+  commentLikes: commentLikeWithUser[];
+};
+
+export type ReactionCounts = {
+  LIKE: number;
+  LOVE: number;
+  SAD: number;
+  HAHA: number;
 };
 
 export type ReportModel = {
@@ -51,8 +74,18 @@ export type ReportModel = {
   postId: number;
   reportedBy: User;
   reportedById: number;
+  reportReason: ReportReason;
+  reportCount: number;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type NotificationModel = {
+  id: number;
+  author: User;
+  authorId: number;
+  post: Post;
+  postId: number;
 };
 
 /**~

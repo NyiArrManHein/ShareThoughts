@@ -19,9 +19,11 @@
 // }
 
 import { getPostById } from "@/lib/query/post/query";
+import { isAuth } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  const response = new Response();
   try {
     const { postId } = await request.json();
 
@@ -32,10 +34,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const post = await getPostById(parseInt(postId, 10));
+    const { isLoggedIn, currentUser } = await isAuth(request, response);
 
-    if (!post) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    const { post, message, status } = await getPostById(
+      parseInt(postId, 10),
+      currentUser?.id!
+    );
+
+    if (status !== 200) {
+      return NextResponse.json({ message }, { status });
     }
 
     return NextResponse.json({ post }, { status: 200 });

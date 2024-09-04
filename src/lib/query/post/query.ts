@@ -2,7 +2,7 @@ import prisma from "@/db";
 import { AccountType, PostModel } from "@/lib/models";
 
 import { extractHashtags } from "@/lib/utils";
-import { PostType } from "@prisma/client";
+import { PostType, Prisma, ReportReason } from "@prisma/client";
 
 // export async function getPostForNewsFeed() {
 //   const posts = await prisma.post.findMany({
@@ -22,7 +22,11 @@ import { PostType } from "@prisma/client";
 
 //   return posts;
 // }
-
+/**
+ *
+ * @param userId
+ * @returns
+ */
 export async function getPostForNewsFeed(userId?: number) {
   let followedAuthorIds: number[] = [];
 
@@ -62,8 +66,24 @@ export async function getPostForNewsFeed(userId?: number) {
       createdAt: "desc",
     },
     include: {
-      author: true,
-      likes: true,
+      author: {
+        select: {
+          id: true,
+          username: true,
+          joinedAt: true,
+          email: true,
+        },
+      },
+      likes: {
+        include: {
+          user: true,
+        },
+      },
+      // comments: {
+      //   include: {
+      //     commentLikes: true,
+      //   },
+      // },
       comments: true,
       shares: true,
     },
@@ -120,25 +140,66 @@ export async function getUserPosts(
     followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
   }
 
+  const orConditions: Prisma.PostWhereInput[] = [
+    { postType: "PUBLIC", authorId: profileUserId },
+  ];
+
+  if (viewerId === profileUserId) {
+    orConditions.push(
+      { postType: "ONLYME", authorId: profileUserId },
+      { postType: "PRIVATE", authorId: profileUserId }
+    );
+  }
+
+  orConditions.push({
+    AND: [
+      { postType: "PRIVATE" },
+      { authorId: profileUserId },
+      { authorId: { in: followedAuthorIds } },
+    ],
+  });
+
+  // const userPosts = await prisma.post.findMany({
+  //   where: viewerId
+  //     ? {
+  //         OR: [
+  //           { postType: "PUBLIC", authorId: profileUserId },
+  //           {
+  //             postType: "ONLYME",
+  //             authorId: profileUserId,
+  //           },
+  //           { postType: "PRIVATE", authorId: profileUserId },
+
+  //           {
+  //             AND: [
+  //               { postType: "PRIVATE" },
+  //               { authorId: profileUserId },
+  //               { authorId: { in: followedAuthorIds } },
+  //             ],
+  //           },
+  //         ],
+  //       }
+  //     : { postType: "PUBLIC", authorId: profileUserId },
+  //   include: {
+  //     likes: true,
+  //     comments: true,
+  //     shares: true,
+  //     author: true,
+  //   },
+  //   orderBy: {
+  //     createdAt: "desc",
+  //   },
+  // });
   const userPosts = await prisma.post.findMany({
     where: viewerId
-      ? {
-          OR: [
-            { postType: "PUBLIC", authorId: profileUserId },
-            { postType: "ONLYME", authorId: viewerId },
-            { postType: "PRIVATE", authorId: viewerId },
-            {
-              AND: [
-                { postType: "PRIVATE" },
-                { authorId: profileUserId },
-                { authorId: { in: followedAuthorIds } },
-              ],
-            },
-          ],
-        }
+      ? { OR: orConditions }
       : { postType: "PUBLIC", authorId: profileUserId },
     include: {
-      likes: true,
+      likes: {
+        include: {
+          user: true,
+        },
+      },
       comments: true,
       shares: true,
       author: true,
@@ -163,7 +224,11 @@ export async function getHashTagPosts(hashtag: string) {
       },
       include: {
         author: true,
-        likes: true,
+        likes: {
+          include: {
+            user: true,
+          },
+        },
         comments: true,
         shares: true,
       },
@@ -190,22 +255,76 @@ export async function getHashTagPosts(hashtag: string) {
 //   });
 // };
 
-export async function getPostById(postId: number) {
+export async function getPostById(postId: number, userId?: number) {
+  let followedAuthorIds: number[] = [];
+
   try {
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
         author: true,
-        likes: true,
+        likes: {
+          include: {
+            user: true,
+          },
+        },
         comments: true,
         shares: true,
       },
     });
 
-    return post;
+    if (userId) {
+      // Fetch the IDs of authors followed by the current user
+      const followedAuthors = await prisma.follower.findMany({
+        where: {
+          followerId: userId,
+        },
+        select: {
+          authorId: true,
+        },
+      });
+
+      followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
+    }
+
+    if (!post) {
+      return { post: null, message: "Post not found", status: 404 };
+    }
+
+    if (post.postType === PostType.PUBLIC) {
+      return { post, status: 200 };
+    } else if (post?.postType === PostType.PRIVATE) {
+      // const isFollower = await prisma.follower.findFirst({
+      //   where: {
+      //     authorId: post.authorId,
+      //     followerId: userId,
+      //   },
+      // });
+      const isFollower = followedAuthorIds.includes(post.authorId);
+      if (isFollower || post.authorId === userId) {
+        return { post, status: 200 };
+      } else {
+        return {
+          post: null,
+          message: "Unauthorized: This post is private.",
+          status: 403,
+        };
+      }
+    } else if (post?.postType === PostType.ONLYME) {
+      if (post.authorId === userId) {
+        return { post, status: 200 };
+      } else {
+        return {
+          post: null,
+          message: "Unauthorized: This post is private.",
+          status: 403,
+        };
+      }
+    }
+    return { post: null, message: "Unexpected error", status: 500 };
   } catch (error) {
     console.error("Error fetching post by ID:", error);
-    throw error;
+    return { post: null, message: "Internal server error", status: 500 };
   }
 }
 
@@ -406,15 +525,60 @@ export async function UpdatePostById(
   return { isEdited, updatedPost, message };
 }
 
-export async function searchPosts(query: string) {
+export async function searchPosts(query: string, userId?: number) {
+  let followedAuthorIds: number[] = [];
+
+  if (userId) {
+    // Fetch the IDs of authors followed by the current user
+    const followedAuthors = await prisma.follower.findMany({
+      where: {
+        followerId: userId,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+
+    followedAuthorIds = followedAuthors.map((follower) => follower.authorId);
+  }
+
   // const cleanedQuery = query.startsWith("#") ? query.substring(1) : query;
   const isHashtagQuery = query.startsWith("#");
   const cleanedQuery = query.toLowerCase().replace(/\s+/g, "");
 
+  // const searchResults = await prisma.post.findMany({
+  //   include: {
+  //     author: true,
+  //     likes: true,
+  //     comments: true,
+  //     shares: true,
+  //   },
+  //   orderBy: {
+  //     createdAt: "desc",
+  //   },
+  // });
+
   const searchResults = await prisma.post.findMany({
+    where: userId
+      ? {
+          OR: [
+            { postType: "PUBLIC" }, // Public posts visible to everyone
+            { postType: "ONLYME", authorId: userId }, // OnlyMe posts by the user themselves
+            { postType: "PRIVATE", authorId: userId }, // Private posts by the user themselves
+            {
+              AND: [
+                { postType: "PRIVATE" }, // Private posts
+                { authorId: { in: followedAuthorIds } }, // By authors followed by the current user
+              ],
+            },
+          ],
+        }
+      : {
+          postType: "PUBLIC", // If no user is logged in, show only public posts
+        },
     include: {
       author: true,
-      likes: true,
+      likes: { include: { user: true } },
       comments: true,
       shares: true,
     },
@@ -527,15 +691,17 @@ export async function checkReport(postId: number, userId: number) {
   return report !== null;
 }
 
-export async function reportPost(postId: number, reportedById: number) {
+export async function reportPost(
+  postId: number,
+  reportReason: ReportReason,
+  reportedById: number
+) {
   try {
     // Check if the report already exists
-    const existingReport = await prisma.report.findUnique({
+    const existingReport = await prisma.report.findFirst({
       where: {
-        postId_reportedById: {
-          postId,
-          reportedById,
-        },
+        postId: postId,
+        reportedById: reportedById,
       },
     });
 
@@ -546,8 +712,9 @@ export async function reportPost(postId: number, reportedById: number) {
     // Create a new report
     const report = await prisma.report.create({
       data: {
-        postId,
-        reportedById,
+        postId: postId,
+        reportReason: reportReason,
+        reportedById: reportedById,
       },
     });
 
@@ -577,8 +744,20 @@ export async function getAllReports() {
         createdAt: "desc", // Sort by createdAt in descending order
       },
     });
-    console.log("Fetched Reports:", reports); // Log the fetched reports to inspect the structure
-    return reports;
+
+    const postIdCounts = reports.reduce((acc, report) => {
+      acc[report.postId] = (acc[report.postId] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    // Attach the count to each report
+    const reportsWithCount = reports.map((report) => ({
+      ...report,
+      reportCount: postIdCounts[report.postId], // Attach the count
+    }));
+
+    // return reports;
+    return reportsWithCount;
   } catch (error) {
     console.error("Error fetching reports:", error);
     throw new Error("Failed to fetch reports");
@@ -586,19 +765,92 @@ export async function getAllReports() {
 }
 
 export async function deletePostByReportId(reportId: number) {
+  try {
+    await prisma.$transaction(async (prisma) => {
+      const report = await prisma.report.findUnique({
+        where: { id: reportId },
+        include: {
+          post: {
+            include: {
+              author: true,
+            },
+          },
+        },
+      });
+
+      if (!report) {
+        throw new Error("Report not found");
+      }
+
+      const { postId } = report;
+
+      await prisma.post.update({
+        where: { id: postId },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      const notification = await prisma.notification.create({
+        data: {
+          authorId: report.post.authorId,
+          postId: report.postId,
+        },
+      });
+
+      console.log("Database Notification", notification);
+    });
+  } catch (error) {
+    console.error("Error deleting post and creating notification:", error);
+    throw new Error("Failed to delete post and create notification");
+  }
+}
+
+export async function deleteReportByReportId(reportId: number) {
   const report = await prisma.report.findUnique({
     where: { id: reportId },
   });
-
   if (!report) {
     throw new Error("Report not found");
   }
 
   const { postId } = report;
 
-  await prisma.post.delete({
-    where: { id: postId },
+  await prisma.report.deleteMany({
+    where: { postId: postId },
   });
+}
+
+export async function getNotification(userId: number) {
+  const notification = await prisma.notification.findMany({
+    where: { authorId: userId },
+    include: {
+      post: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  console.log("Database notification", notification);
+  return notification;
+}
+
+export async function deleteNotification(notificationId: number) {
+  let isDeleted: boolean = false;
+  let message: string = "Failed to remove notification.";
+  const noti = await prisma.notification.findFirst({
+    where: { id: notificationId },
+  });
+  if (noti) {
+    const deleteNotification = await prisma.notification.delete({
+      where: { id: notificationId },
+    });
+    isDeleted = true;
+    message = deleteNotification
+      ? "Removed notification successfully."
+      : "Failed to delete the notification.";
+  }
+  return { isDeleted, message };
 }
 
 // export async function getComment(postId: number) {

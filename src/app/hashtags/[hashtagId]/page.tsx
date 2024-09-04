@@ -68,15 +68,16 @@ const HashtagView = ({ params }: HashtagViewProps) => {
           {/* Left Sidebar */}
           <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
           <div className="w-full px-3">
-            {posts.map((post) => (
-              <Post
-                key={`post_${post.id}`}
-                post={post}
-                userId={data.user?.id}
-                deletePostFromTheList={deletePostFromTheList}
-                updatePostFromTheList={updatePostFromTheList}
-              />
-            ))}
+            {data &&
+              posts.map((post) => (
+                <Post
+                  key={`post_${post.id}`}
+                  post={post}
+                  userId={data.user?.id}
+                  deletePostFromTheList={deletePostFromTheList}
+                  updatePostFromTheList={updatePostFromTheList}
+                />
+              ))}
           </div>
           {/* Right Sidebar */}
           <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>

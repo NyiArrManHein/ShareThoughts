@@ -7,9 +7,17 @@ export async function getComment(postId: number) {
     where: { postId: postId },
     include: {
       user: true,
-      commentLikes: true,
+      commentLikes: {
+        include: {
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
     },
   });
+  console.log(comments);
   return { comments, message };
 }
 
@@ -24,6 +32,14 @@ export async function insertCommentByPostId(
       content: commentContent,
       userId: userId,
       postId: postId,
+    },
+    include: {
+      user: true,
+      commentLikes: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
@@ -54,6 +70,16 @@ export async function UpdateCommentById(
       where: { id: commentId },
       data: {
         content: commentContent,
+      },
+      include: {
+        user: true,
+        commentLikes: {
+          include: {
+            user: true,
+          },
+        },
+
+        // Add other relations you want to include
       },
     })) as unknown as CommentModel; // Type assertion
     isEdited = true;

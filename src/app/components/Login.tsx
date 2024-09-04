@@ -55,8 +55,13 @@ function Login({
         if (user) {
           // Logged in successfully
           await mutateUser({ ...data, user: user });
+          // Retrieve redirect URL from query parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectTo = urlParams.get("redirectTo");
           // push("/");
-          if (user.role === "ADMIN") {
+          if (redirectTo) {
+            push(decodeURIComponent(redirectTo));
+          } else if (user.role === "ADMIN") {
             // Redirect to admin page if user is admin
             push("/admin");
           } else {

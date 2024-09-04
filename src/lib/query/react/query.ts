@@ -13,10 +13,16 @@ export async function insertIntoReact(
       userId: userId,
       postId: postId,
     },
+    include: {
+      user: true,
+    },
   });
   if (reaction) {
     if (reaction.reaction === reactionType) {
-      react = await prisma.like.delete({ where: { id: reaction.id } });
+      react = await prisma.like.delete({
+        where: { id: reaction.id },
+        include: { user: true },
+      });
       message = "Deleted reaction.";
     } else {
       react = await prisma.like.update({
@@ -26,6 +32,7 @@ export async function insertIntoReact(
         data: {
           reaction: reactionType,
         },
+        include: { user: true },
       });
       message = "Updated reaction.";
     }
@@ -36,6 +43,7 @@ export async function insertIntoReact(
         userId: userId,
         postId,
       },
+      include: { user: true },
     });
     message = "Created the reaction.";
   }
@@ -48,6 +56,9 @@ export async function fetchCommentReaction(userId: number, commentId: number) {
       where: {
         userId: userId,
         commentId: commentId,
+      },
+      include: {
+        user: true,
       },
     });
     return {
@@ -72,10 +83,16 @@ export async function insertIntoCommentReact(
       userId: userId,
       commentId: commentId,
     },
+    include: {
+      user: true,
+    },
   });
   if (reaction) {
     if (reaction.reaction === reactionType) {
-      react = await prisma.commentLike.delete({ where: { id: reaction.id } });
+      react = await prisma.commentLike.delete({
+        where: { id: reaction.id },
+        include: { user: true },
+      });
       message = "Deleted reaction.";
     } else {
       react = await prisma.commentLike.update({
@@ -84,6 +101,9 @@ export async function insertIntoCommentReact(
         },
         data: {
           reaction: reactionType,
+        },
+        include: {
+          user: true,
         },
       });
       message = "Updated reaction.";
@@ -94,6 +114,9 @@ export async function insertIntoCommentReact(
         reaction: reactionType,
         userId: userId,
         commentId,
+      },
+      include: {
+        user: true,
       },
     });
     message = "Created the reaction.";
