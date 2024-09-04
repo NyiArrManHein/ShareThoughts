@@ -6,6 +6,10 @@ import { FaPlus } from "react-icons/fa";
 import useUser from "@/lib/useUser";
 import { PostModel, PostType } from "@/lib/models";
 import AddPost from "./components/AddPost";
+import Html from "./components/Html";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Role } from "@prisma/client";
 
 export default function Home() {
   // Use User
@@ -19,6 +23,8 @@ export default function Home() {
 
   // Posts
   const [posts, setPosts] = useState<PostModel[]>([]);
+  const [postType, setPostType] = useState<PostType>(PostType.PUBLIC);
+  const router = useRouter();
 
   // useEffect(() => {
   //   fetch("/api/posts/", {
@@ -41,16 +47,34 @@ export default function Home() {
           createdAt: new Date(post.createdAt),
           updatedAt: new Date(post.updatedAt),
         }));
+
         setPosts(postsWithDates);
       })
     );
-  }, []);
+  }, [data]);
+
+  useEffect(() => {
+    if (!isLoading && data) {
+      if (data.user?.role === Role.ADMIN) {
+        // Redirect to the admin page
+        router.push("/admin");
+      }
+    }
+  }, [data, isLoading, router]);
 
   // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Validate title to prevent hashtags
+    const hashtagRegex = /#\w+/g;
+    if (hashtagRegex.test(title)) {
+      // alert("Hashtags are not allowed in the title. Please remove them.");
+      toast("Hashtags are not allowed in the title. Please remove them.");
+      return;
+    }
     const data = {
-      postType: PostType.PUBLIC,
+      // postType: PostType.PUBLIC,
+      postType,
       title: title,
       content: content,
     };
@@ -66,8 +90,10 @@ export default function Home() {
       post.createdAt = new Date(post.createdAt); // Convert createdAt to Date object
       const newPosts = [post, ...posts];
       setPosts(newPosts);
+
       setTitle("");
       setContent("");
+      setPostType(PostType.PUBLIC); // Reset postType to default
     }
   };
 
@@ -97,12 +123,20 @@ export default function Home() {
   const updatePostFromTheList = (
     postId: number,
     postTitle: string,
-    postContent: string
+    postContent: string,
+    postHashtags: string,
+    postType: PostType
   ) => {
     setPosts((prevPosts) => {
       const updatedPosts = prevPosts.map((post) =>
         post.id === postId
-          ? { ...post, title: postTitle, content: postContent }
+          ? {
+              ...post,
+              title: postTitle,
+              content: postContent,
+              hashtags: postHashtags,
+              postType: postType,
+            }
           : post
       );
       return updatedPosts;
@@ -110,51 +144,59 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="flex flex-row w-full p-5">
-        {/* Left Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
+    <Html showNavbar={true}>
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <div className="flex flex-row w-full p-5">
+          {/* Left Sidebar */}
+          <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
 
-        {/* Posts */}
-        <div className="w-full px-3">
-          {/* Add Post Bottom */}
-          {isLoading ? (
-            "Loading ..."
-          ) : data.isLoggedIn ? (
-            <span
-              className={isAddPost ? "hidden" : "btn mb-1"}
-              onClick={() => setIsAddPost(!isAddPost)}
-            >
-              <FaPlus /> Add Post
-            </span>
-          ) : (
-            ""
-          )}
-          <AddPost
-            submitPost={submitPost}
-            isAddPost={isAddPost}
-            hideAddPost={hideAddPost}
-            title={title}
-            setTitle={setTitle}
-            content={content}
-            setContent={setContent}
-          />
-          <div>
-            {posts.map((post) => (
-              <Post
-                key={"post_" + post.id}
-                post={post}
-                userId={data.user?.id}
-                deletePostFromTheList={deletePostFromTheList}
-                updatePostFromTheList={updatePostFromTheList}
-              />
-            ))}
+          {/* Posts */}
+          <div className="w-full px-3">
+            {/* Add Post Bottom */}
+            {isLoading ? (
+              "Loading ..."
+            ) : data.isLoggedIn ? (
+              <span
+                className={isAddPost ? "hidden" : "btn mb-1"}
+                onClick={() => setIsAddPost(!isAddPost)}
+              >
+                <FaPlus /> Add Post
+              </span>
+            ) : (
+              ""
+            )}
+            <AddPost
+              submitPost={submitPost}
+              isAddPost={isAddPost}
+              hideAddPost={hideAddPost}
+              title={title}
+              setTitle={setTitle}
+              content={content}
+              setContent={setContent}
+              postType={postType}
+              setPostType={setPostType}
+            />
+            <div>
+              {data &&
+                posts.map(
+                  (post) =>
+                    post.isDeleted !== true && (
+                      <Post
+                        key={"post_" + post.id}
+                        post={post}
+                        userId={data.user?.id}
+                        deletePostFromTheList={deletePostFromTheList}
+                        updatePostFromTheList={updatePostFromTheList}
+                      />
+                    )
+                )}
+            </div>
           </div>
-        </div>
 
-        {/* Right Sidebar */}
-        <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
-      </div>
-    </main>
+          {/* Right Sidebar */}
+          <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
+        </div>
+      </main>
+    </Html>
   );
 }

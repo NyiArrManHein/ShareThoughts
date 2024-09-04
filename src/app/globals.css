@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body{
-    overflow-x: clip;
+html,
+body {
+  overflow-x: clip;
+}
+.react-confirm-alert-overlay {
+  backdrop-filter: none !important; /* Removes blur */
+  background: rgba(0, 0, 0, 0) !important; /* Fully transparent background */
 }

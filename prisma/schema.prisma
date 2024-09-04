@@ -34,9 +34,12 @@ model User {
   likes         Like[]
   comments      Comment[]
   shares        Share[]
-  
-  
   Reply         Reply[]
+  reports       Report[]
+  commentLikes  CommentLike[] 
+  following     Follower[] @relation("following")
+  follower      Follower[] @relation("follower")
+  notifications Notification[]
 }
 
 model Post {
@@ -46,12 +49,16 @@ model Post {
   updatedAt DateTime? @updatedAt
   title     String
   content   String
+  hashtags  String   @default("")
   published Boolean?  @default(false)
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
   likes     Like[]
   comments  Comment[]
   shares    Share[]
+  reports   Report[]
+  isDeleted Boolean @default(false)
+  notifications Notification[]
 }
 
 model Like {
@@ -64,14 +71,24 @@ model Like {
 }
 
 model Comment {
-  id      Int     @id @default(autoincrement())
-  content String
+  id        Int       @id @default(autoincrement())
+  content   String
   createdAt DateTime? @default(now())
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  Int
-  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  Int
-  Reply   Reply[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  Reply     Reply[]
+  commentLikes CommentLike[]
+}
+
+model CommentLike{
+  id Int @id @default(autoincrement())
+  reaction Reactions @default(LIKE)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  comment  Comment   @relation(fields:[commentId],references:[id],onDelete:Cascade)
+  commentId Int
 }
 
 model Reply {
@@ -91,8 +108,39 @@ model Share {
   postId Int
 }
 
+model Report {
+  id           Int      @id @default(autoincrement())
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       Int
+  reportedBy   User     @relation(fields: [reportedById], references: [id], onDelete: Cascade)
+  reportedById Int
+  reportReason ReportReason
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  @@unique([postId, reportedById])
+  @@index([postId])
+  @@index([reportedById])
+}
 
+model Follower {
+  id         Int  @id @default(autoincrement())
+  authorId   Int
+  followerId Int
+  author     User @relation("following", fields: [authorId], references: [id], onDelete: Cascade)
+  follower   User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, followerId])
+}
+
+model Notification {
+  id          Int     @id @default(autoincrement())
+  author      User    @relation(fields: [authorId], references: [id],onDelete: Cascade)
+  authorId    Int
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  createdAt DateTime? @default(now())
+}
 
 enum Role {
   USER
@@ -122,3 +170,13 @@ enum Reactions {
   HAHA
   SAD
 }
+
+enum ReportReason{
+  HATE
+  ADULT
+  MISLEADING
+  OTHER
+}
+
+
+

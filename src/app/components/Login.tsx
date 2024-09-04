@@ -55,7 +55,19 @@ function Login({
         if (user) {
           // Logged in successfully
           await mutateUser({ ...data, user: user });
-          push("/");
+          // Retrieve redirect URL from query parameters
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectTo = urlParams.get("redirectTo");
+          // push("/");
+          if (redirectTo) {
+            push(decodeURIComponent(redirectTo));
+          } else if (user.role === "ADMIN") {
+            // Redirect to admin page if user is admin
+            push("/admin");
+          } else {
+            // Redirect to homepage if user is not admin
+            push("/");
+          }
         } else {
           // const { message } = await res.json();
           setFlashMessage({ message: message, category: "bg-error" });

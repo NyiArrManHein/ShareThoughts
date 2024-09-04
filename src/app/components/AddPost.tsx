@@ -1,3 +1,4 @@
+import { PostType } from "@/lib/models";
 import React, { Dispatch, SetStateAction } from "react";
 
 function AddPost({
@@ -8,6 +9,8 @@ function AddPost({
   setTitle,
   content,
   setContent,
+  postType,
+  setPostType,
 }: {
   submitPost: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   isAddPost: boolean;
@@ -16,6 +19,9 @@ function AddPost({
   setTitle: Dispatch<SetStateAction<string>>;
   content: string;
   setContent: Dispatch<SetStateAction<string>>;
+  postType: string;
+  // setPostType: Dispatch<SetStateAction<string>>;
+  setPostType: Dispatch<SetStateAction<PostType>>;
 }) {
   return (
     <form onSubmit={submitPost}>
@@ -49,6 +55,18 @@ function AddPost({
           value={content}
           onChange={(e) => setContent(e.currentTarget.value)}
         ></textarea>
+        <div>
+          <label htmlFor="postType">Post Type:</label>
+          <select
+            id="postType"
+            value={postType}
+            onChange={(e) => setPostType(e.target.value as PostType)}
+          >
+            <option value="PUBLIC">Public</option>
+            <option value="PRIVATE">Private</option>
+            <option value="ONLYME">Only Me</option>
+          </select>
+        </div>
         <div>
           {/* Fixed here */}
           {/* <input
