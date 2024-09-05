@@ -1,5 +1,6 @@
 // components/PostModal.tsx
 import React from "react";
+import { FaTimes } from "react-icons/fa";
 
 interface ModalProps {
   isOpen: boolean;

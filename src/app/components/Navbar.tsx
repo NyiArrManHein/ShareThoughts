@@ -65,8 +65,6 @@ function Navbar({
   };
   useEffect(() => {
     fetchNotification();
-    console.log("UI notification" + notifications);
-    console.log("Notification length" + notifications.length);
   }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {

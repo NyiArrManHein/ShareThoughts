@@ -18,6 +18,7 @@ import {
   FaSadCry,
   FaShare,
   FaThumbsUp,
+  FaTimes,
 } from "react-icons/fa";
 import CommentComponent from "./CommentComponent";
 import ReactionsComponent from "./ReactionsComponent";
@@ -691,12 +692,20 @@ function Post({
       {/* Comment Section */}
       {isCommentModalOpen && (
         <dialog id={"comment_modal_" + post.id} className="modal" open>
-          <div className="modal-box relative h-[700px]">
-            <h3 className="font-bold text-lg">Comment Section</h3>
+          <div className="modal-box relative h-[500px]">
+            <div className="flex flex-row justify-between cursor-pointer">
+              <h3 className="font-bold text-lg">Comment Section</h3>
+              <FaTimes
+                onClick={() => {
+                  setIsCommentModalOpen(false);
+                }}
+              />
+            </div>
+
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
               <form onSubmit={commentEdit}>
                 <textarea
-                  className="input input-ghost focus:outline-none focus:border-none w-full"
+                  className="input input-ghost fSocus:outline-none focus:border-none w-full"
                   name="commentContent"
                   id="commentContent"
                   value={editingComment.content}
