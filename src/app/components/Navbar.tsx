@@ -152,7 +152,7 @@ function Navbar({
   return (
     <nav className="navbar bg-base-200 top-0 sticky z-50 w-full">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl block md:hidden">TSS</a>
+        <a className="btn btn-ghost text-xl block md:hidden">ST</a>
         <a className="btn btn-ghost text-xl hidden md:block">
           Share Thoughts For Everyone
         </a>

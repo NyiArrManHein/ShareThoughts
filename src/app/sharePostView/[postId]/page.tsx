@@ -66,8 +66,7 @@ const SharedPostView = ({ params }: SharedPostViewProps) => {
     if (postId) {
       fetchPostById(postId);
     }
-  }, []);
-  // }, [postId, router]);
+  }, [postId, router]);
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -76,8 +75,7 @@ const SharedPostView = ({ params }: SharedPostViewProps) => {
         router.push("/admin");
       }
     }
-  }, []);
-  // }, [data, isLoading, router]);
+  }, [data, isLoading, router]);
 
   if (!post) {
     return <p>Loading...</p>;

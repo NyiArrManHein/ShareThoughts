@@ -51,8 +51,7 @@ export default function Home() {
         setPosts(postsWithDates);
       })
     );
-  }, []);
-  // }, [data]);
+  }, [data]);
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -61,8 +60,7 @@ export default function Home() {
         router.push("/admin");
       }
     }
-  }, []);
-  // }, [data, isLoading, router]);
+  }, [data, isLoading, router]);
 
   // Upload Posts
   const submitPost = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -33,8 +33,7 @@ const HashtagView = ({ params }: HashtagViewProps) => {
         }));
         setPosts(postsWithDates);
       });
-  }, []);
-  // }, [decodedHashtagId]);
+  }, [decodedHashtagId]);
 
   const deletePostFromTheList = (postId: number) => {
     const newPosts = posts.filter((post) => post.id !== postId);
