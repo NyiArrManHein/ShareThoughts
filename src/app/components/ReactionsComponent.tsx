@@ -98,27 +98,35 @@ function ReactionsComponent({
           </div>
         )}
 
-        <div className={showReactions ? "hidden" : ""}>
+        {/* <div className={showReactions ? "hidden" : ""}>
           <span
             tabIndex={0}
             className="hover:text-primary cursor-pointer text-2xl"
             onClick={() => setShowReactions(!showReactions)}
-          >
-            {reaction ? (
-              reaction === "HAHA" ? (
-                <FaLaugh />
-              ) : reaction === "LIKE" ? (
-                <FaThumbsUp />
-              ) : reaction === "LOVE" ? (
-                <FaHeart />
+          > */}
+        {!showReactions && (
+          <div>
+            <span
+              tabIndex={0}
+              className="hover:text-primary cursor-pointer text-2xl"
+              onClick={() => setShowReactions(!showReactions)}
+            >
+              {reaction ? (
+                reaction === "HAHA" ? (
+                  <FaLaugh />
+                ) : reaction === "LIKE" ? (
+                  <FaThumbsUp />
+                ) : reaction === "LOVE" ? (
+                  <FaHeart />
+                ) : (
+                  <FaSadCry />
+                )
               ) : (
-                <FaSadCry />
-              )
-            ) : (
-              <FaThumbsUp />
-            )}
-          </span>
-        </div>
+                <FaThumbsUp />
+              )}
+            </span>
+          </div>
+        )}
       </span>
     </span>
   );

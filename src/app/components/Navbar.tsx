@@ -40,7 +40,7 @@ function Navbar({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>();
   const router = useRouter();
 
   const fetchNotification = async () => {
@@ -226,14 +226,23 @@ function Navbar({
                     </span>
                   )}
 
-                  <FaBell />
+                  <FaBell onClick={() => setIsDropDownOpen(true)} />
                 </div>
-                {notifications.length > 0 && (
+                {notifications.length > 0 && isDropDownOpen && (
                   <ul
                     tabIndex={0}
-                    className=" border-base-300 mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-200 rounded-box w-96"
+                    className=" border-base-300 mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-200 rounded-box w-96 -left-72"
                   >
-                    <h1>Notification</h1>
+                    <div className="flex flex-row justify-between px-6 mb-3">
+                      <h1>Notification</h1>
+                      <FaTimes
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setIsDropDownOpen(false);
+                        }}
+                      />
+                    </div>
+
                     {notifications.map((notification, index) => (
                       <li
                         key={index}
@@ -266,6 +275,7 @@ function Navbar({
                             this post, and after reviewing, we determined it
                             goes against our guidelines.
                           </a>
+
                           <FaTrash
                             onClick={(e) => {
                               removeNotification(e, notification);

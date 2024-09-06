@@ -148,10 +148,10 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-between">
         <div className="flex flex-row w-full p-5">
           {/* Left Sidebar */}
-          <div className="w-1/4 lg:w-6/12 hidden sm:flex"></div>
+          <div className="hidden w-1/4 lg:w-6/12 sm:flex"></div>
 
           {/* Posts */}
-          <div className="w-full px-3">
+          <div className="w-full">
             {/* Add Post Bottom */}
             {isLoading ? (
               "Loading ..."

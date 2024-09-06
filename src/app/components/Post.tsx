@@ -693,9 +693,10 @@ function Post({
       {isCommentModalOpen && (
         <dialog id={"comment_modal_" + post.id} className="modal" open>
           <div className="modal-box relative h-[500px]">
-            <div className="flex flex-row justify-between cursor-pointer">
+            <div className="flex flex-row justify-between">
               <h3 className="font-bold text-lg">Comment Section</h3>
               <FaTimes
+                className="cursor-pointer"
                 onClick={() => {
                   setIsCommentModalOpen(false);
                 }}
