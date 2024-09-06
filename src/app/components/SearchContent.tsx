@@ -38,7 +38,8 @@ const SearchContent = () => {
     };
 
     fetchSearchResults();
-  }, [query]);
+  }, []);
+  // }, [query]);
 
   if (loading) {
     return <div>Loading...</div>;

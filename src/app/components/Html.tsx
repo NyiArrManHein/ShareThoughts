@@ -112,7 +112,8 @@ function Html({ children, showNavbar = true }: HtmlProps) {
 
   useEffect(() => {
     setIsPageLoading(isLoading);
-  }, [isLoading]);
+  }, []);
+  // }, [isLoading]);
 
   const logoutUser = async () => {
     const res = await fetch("/api/users/logout", {

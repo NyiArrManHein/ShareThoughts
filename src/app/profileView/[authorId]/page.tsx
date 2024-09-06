@@ -120,7 +120,8 @@ const ProfileView = ({ params }: ProfileViewProps) => {
 
   useEffect(() => {
     fetchPosts();
-  }, [authorId, isFollowing]);
+  }, []);
+  // }, [authorId, isFollowing]);
 
   const checkFollowingStatus = async () => {
     try {
@@ -141,7 +142,8 @@ const ProfileView = ({ params }: ProfileViewProps) => {
 
   useEffect(() => {
     checkFollowingStatus();
-  }, [authorId]);
+  }, []);
+  // }, [authorId]);
 
   const deletePostFromTheList = (postId: number) => {
     const newPosts = posts.filter((post) => post.id !== postId);
