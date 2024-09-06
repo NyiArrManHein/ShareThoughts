@@ -24,7 +24,8 @@ function AuthComponent({
     if (isLogIn) {
       setIsRegister(false);
     }
-  }, [isLogIn]);
+  }, []);
+  // }, [isLogIn]);
 
   return (
     <main className="flex flex-row justify-center mt-4">

@@ -97,7 +97,8 @@ function Post({
 
   useEffect(() => {
     setCurrentPost(post);
-  }, [post]);
+  }, []);
+  // }, [post]);
 
   useEffect(() => {
     const checkIfReported = async () => {
@@ -110,7 +111,8 @@ function Post({
     };
 
     checkIfReported();
-  }, [currentPost.id]);
+    // }, [currentPost.id]);
+  }, []);
 
   /**
    * Reacting the Post
