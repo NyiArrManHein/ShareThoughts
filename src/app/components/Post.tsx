@@ -620,21 +620,23 @@ function Post({
         {currentPost.hashtags && formatHashtags(currentPost.hashtags)}
       </div>
 
-      <div
-        className="card-body cursor-pointer flex flex-row items-center whitespace-pre-line overflow-auto"
-        onClick={reactionCountModal}
-      >
-        {/* <ReactionCount
+      {currentPost.likes.length > 0 && (
+        <div
+          className="card-body cursor-pointer flex flex-row items-center whitespace-pre-line overflow-auto"
+          onClick={reactionCountModal}
+        >
+          {/* <ReactionCount
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           handler={reactionCount}
         /> */}
-        <div className="flex flex-row items-center text-2xl gap-0">
-          <FaThumbsUp />
-          <FaHeart />
+          <div className="flex flex-row items-center text-2xl gap-0">
+            <FaThumbsUp />
+            <FaHeart />
+          </div>
+          <div>{currentPost.likes.length}</div>
         </div>
-        <div>{currentPost.likes.length}</div>
-      </div>
+      )}
 
       <div className="w-full flex flex-row pt-2">
         <span className="flex w-full justify-center">
