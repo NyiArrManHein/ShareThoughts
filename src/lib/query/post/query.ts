@@ -220,6 +220,7 @@ export async function getHashTagPosts(hashtag: string) {
       where: {
         hashtags: {
           contains: hashtag, // Search for the exact hashtag
+          mode: "insensitive",
         },
       },
       include: {
